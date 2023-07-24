@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "./common.h"
+#include "../mathutil.h"
 
 template <typename T>
 class Buffer {
@@ -38,8 +39,11 @@ class Buffer2D : public Buffer<T> {
 	void Copy(const Buffer2D<T> &buffer);
 
 	T operator()(const int &x, const int &y) const;
+	T operator()(const Ivec2 &pos) const;
+	T operator()(float x, float y) const;
+	T operator()(const Vec2 &pos) const;
 	T &operator()(const int &x, const int &y);
-
+	T &operator()(const Ivec2 &pos); 
 	int m_width, m_height;
 };
 
@@ -62,6 +66,31 @@ template <typename T>
 inline T &Buffer2D<T>::operator()(const int &x, const int &y) {
 	CHECK(0 <= x && x < m_width && 0 <= y && y < m_height);
 	return this->m_buffer[y * m_width + x];
+}
+
+template <typename T>
+inline T Buffer2D<T>::operator()(const Ivec2 &pos) const {
+	return this->operator()(pos.x, pos.y);
+}
+
+template <typename T>
+inline T &Buffer2D<T>::operator()(const Ivec2 &pos) {
+	return this->operator()(pos.x, pos.y);
+}
+
+template <typename T> 
+inline T Buffer2D<T>::operator()(float x, float y) const {
+	int x0 = floor(x), y0 = floor(y);
+	int x1 = ceil(x), y1 = ceil(y);
+	T& v00 = operator()(x0, y0), v01 = operator()(x0, y1);
+	T& v10 = operator()(x1, y0), v11 = operator()(x1, y1);
+	float tx = x - x0, ty = y - y0;
+	return lerp2d(v00, v01, v10, v11, tx, ty);
+}	
+
+template <typename T>
+inline T Buffer2D<T>::operator()(const Vec2 &pos) const {
+	return this->operator()(pos.x, pos.y);
 }
 
 template <typename T>

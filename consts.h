@@ -54,7 +54,7 @@ const float REJECT_ETA = .05;
 // hierarchy parameters
 
 const int HIER_LEVEL = 4;
-const int HIER_REDUC_FACTOR = 4;
+const float HIER_REDUC_FACTOR = 4;
 const int HIER_MAX_SHIFT_VEC_MAG = []() -> int {
 	int ret = 0;
 	for (int i = 0; i < HIER_LEVEL; i++) {
@@ -62,3 +62,4 @@ const int HIER_MAX_SHIFT_VEC_MAG = []() -> int {
 	}
 	return ret;
 }();
+const int HIER_REFINE_AFTER = 2; // do sub-pixel refinement for levels smaller than this 

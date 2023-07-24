@@ -12,14 +12,14 @@ Impl::Impl(const FrameInfo &first_frame) {
 	is_first_frame = true;
 	for (int i = -MAX_SHIFT_VEC_MAG; i <= MAX_SHIFT_VEC_MAG; i++) {
 		for (int j = -MAX_SHIFT_VEC_MAG; j <= MAX_SHIFT_VEC_MAG; j++) {
-			single_layer_shift_vectors.push_back(Ivec2(i, j));
+			single_layer_shift_vecs.push_back(Ivec2(i, j));
 		}
 	}
 }
 
-Buffer2D<Color> Impl::down_sample(const Buffer2D<Color> &image,
-								  const float scale) {
-	CHECK(scale < 1 && scale > 0);
+Buffer2D<Color> Impl::scale_img(const Buffer2D<Color> &image,
+								const float scale) {
+	CHECK(scale > 0);
 	int w = image.m_width, h = image.m_height;
 	int nw = round(w * scale), nh = round(h * scale);
 	Buffer2D<Color> ret = CreateBuffer2D<Color>(nw, nh);
@@ -38,15 +38,17 @@ Buffer2D<Color> Impl::down_sample(const Buffer2D<Color> &image,
 	return ret;
 }
 
-vector<Buffer2D<float>> Impl::dist_kernel(const Buffer2D<Color> &image) {
-	vector<Buffer2D<float>> ret(single_layer_shift_vectors.size());
-	for (int i = 0; i < single_layer_shift_vectors.size(); i++)
+vector<Buffer2D<float>> Impl::dist_kernel(const Buffer2D<Color> &image,
+										  const Buffer2D<Vec2> &base_shiftv) {
+	vector<Buffer2D<float>> ret(single_layer_shift_vecs.size());
+	for (int i = 0; i < single_layer_shift_vecs.size(); i++)
 		ret.push_back(CreateBuffer2D<float>(image.m_width, image.m_height));
-	for (int sv = 0; sv < single_layer_shift_vectors.size(); sv++) {
-		auto [dx, dy] = single_layer_shift_vectors[sv];
+	for (int sv = 0; sv < single_layer_shift_vecs.size(); sv++) {
+		auto [dx, dy] = single_layer_shift_vecs[sv];
 		for (int i = 0; i < image.m_width; i++) {
 			for (int j = 0; j < image.m_height; j++) {
-				int ni = i + dx, nj = j + dy;
+				auto [ni, nj] = base_shiftv(i, j);
+				ni += dx + i, nj += dy + j;
 				if (ni < 0 || ni >= image.m_width || nj < 0 ||
 					nj >= image.m_height) {
 					ret[sv](i, j) = -1;
@@ -59,11 +61,14 @@ vector<Buffer2D<float>> Impl::dist_kernel(const Buffer2D<Color> &image) {
 	}
 }
 
-vector<Buffer2D<float>> Impl::blur_kernel(const Img_vec<float> &dist_output) {
-	auto ret = Img_vec<float>();
+vector<Buffer2D<float>> Impl::blur_kernel(
+	const vec_of_img<float> &dist_output) {
+	auto ret = vec_of_img<float>();
 	int w = dist_output[0].m_width, h = dist_output[0].m_height;
 	for (auto &cur_dis : dist_output) {
 		auto cur_ret = CreateBuffer2D<float>(w, h);
+		fill(cur_ret.m_buffer.get(), cur_ret.m_buffer.get() + cur_ret.m_size,
+			 -1);
 		for (int cx = 0; cx < w; cx++) {
 			for (int cy = 0; cy < h; cy++) {
 				float sum = 0;
@@ -87,26 +92,20 @@ vector<Buffer2D<float>> Impl::blur_kernel(const Img_vec<float> &dist_output) {
 	return ret;
 }
 
-Buffer2D<Vec2> Impl::merge_kernel(const Img_vec<float> &blur_output) {
-	// form of quadric surface: z = ax^2 + by^2 + cxy + dx + ey + f
-	// phi refer to [x^2, y^2, xy, x, y, 1]
-	// least square method:
-	// https://www.bilibili.com/video/BV1Uu411d72H/?spm_id_from=333.337.search-card.all.click&vd_source=4de003ee9a3815aedd7d0cb2c7a12d14
-
+Buffer2D<Vec3> Impl::merge_kernel_integer(const vec_of_img<float> &blur_output,
+										  const Buffer2D<Vec2> &base_shiftv) {
 	int w = blur_output[0].m_width, h = blur_output[0].m_height;
-	Buffer2D<Vec2> ret = CreateBuffer2D<Vec2>(w, h);
-	Buffer2D<Vec3> mn_pts2d = CreateBuffer2D<Vec3>(w, h);
-	fill(mn_pts2d.m_buffer.get(), mn_pts2d.m_buffer.get() + mn_pts2d.m_size,
-		 Vec3(-1, -1, -1));
-	Buffer2D<float> mn_dis = CreateBuffer2D<float>(w, h);
+	Buffer2D<Vec3> ret = CreateBuffer2D<Vec3>(w, h);
+	fill(ret.m_buffer.get(), ret.m_buffer.get() + ret.m_size, Vec3(-1, -1, -1));
 	// x, y => shift vector, z => distance
 	// in each pixel find the minimum distance and corresponding shift vector
 	for (int cx = 0; cx < w; cx++) {
 		for (int cy = 0; cy < h; cy++) {
 			float min_dis = 1e9;
 			Vec2 min_shift;
-			for (int sv = 0; sv < single_layer_shift_vectors.size(); sv++) {
-				auto [dx, dy] = single_layer_shift_vectors[sv];
+			for (int sv = 0; sv < single_layer_shift_vecs.size(); sv++) {
+				auto [dx, dy] =
+					single_layer_shift_vecs[sv] + base_shiftv(cx, cy);
 				float cur_dis = blur_output[sv](cx, cy);
 				if (cur_dis == -1) continue;
 				if (cur_dis < min_dis) {
@@ -114,9 +113,23 @@ Buffer2D<Vec2> Impl::merge_kernel(const Img_vec<float> &blur_output) {
 					min_shift = Vec2(dx, dy);
 				}
 			}
-			mn_pts2d(cx, cy) = Vec3(min_shift.x, min_shift.y, min_dis);
+			ret(cx, cy) = Vec3(min_shift.x, min_shift.y, min_dis);
 		}
 	}
+	return ret;
+}
+
+Buffer2D<Vec3> Impl::merge_kernel_subpixel(
+	const vec_of_img<float> &blur_output,
+	const Buffer2D<Vec3> &merge_int_output) {
+	// form of quadric surface: z = ax^2 + by^2 + cxy + dx + ey + f
+	// phi refer to [x^2, y^2, xy, x, y, 1]
+	// least square method:
+	// https://www.bilibili.com/video/BV1Uu411d72H/?spm_id_from=333.337.search-card.all.click&vd_source=4de003ee9a3815aedd7d0cb2c7a12d14
+
+	int w = blur_output[0].m_width, h = blur_output[0].m_height;
+	Buffer2D<Vec3> ret = CreateBuffer2D<Vec3>(w, h);
+
 	for (int cx = 0; cx < w; cx++) {
 		for (int cy = 0; cy < h; cy++) {
 			vector<Vec3> pts;
@@ -125,14 +138,13 @@ Buffer2D<Vec2> Impl::merge_kernel(const Img_vec<float> &blur_output) {
 				for (int dy = -MERGE_KERNEL_RAD; dy <= MERGE_KERNEL_RAD; dy++) {
 					int nx = cx + dx, ny = cy + dy;
 					if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
-					if (mn_pts2d(nx, ny).z == -1) continue;
-					pts.push_back(Vec3(dx, dy, 1));
+					if (merge_int_output(nx, ny).z == -1) continue;
+					pts.push_back(merge_int_output(nx, ny));
 					wts.push_back(guassian(dx, dy, MERGE_KERNEL_SIGMA));
 				}
 			}
-
-			if (pts.empty()){
-				ret(cx, cy) = Vec2(-1, -1);
+			if (pts.empty()) {
+				ret(cx, cy) = Vec3(-1, -1, -1);
 				continue;
 			}
 
@@ -140,16 +152,84 @@ Buffer2D<Vec2> Impl::merge_kernel(const Img_vec<float> &blur_output) {
 			auto _quadric_eval = [&quadric_params](const Vec2 &pt) {
 				return quadric_eval(quadric_params, pt);
 			};	// with parameters
-			Vec2 sub_pix_shiftvec = two_d_grad_descent(
+			Vec3 sub_pix_shiftvec_and_val = two_d_grad_descent(
 				_quadric_eval, Vec2(cx, cy) - Vec2(MERGE_KERNEL_RAD),
 				Vec2(cx, cy) + Vec2(MERGE_KERNEL_RAD), MERGE_KERNEL_DESC_STEP,
 				MERGE_KERNEL_DESC_ITER);
-			ret(cx, cy) = sub_pix_shiftvec;
+			ret(cx, cy) = sub_pix_shiftvec_and_val;
+		}
+		return ret;
+	}
+}
+
+Buffer2D<Color> Impl::reproject_kernel(const Buffer2D<Vec3> &shift_vec_and_dist,
+									   const Buffer2D<Color> &image) {
+	CHECK(shift_vec_and_dist.m_width == image.m_width &&
+		  shift_vec_and_dist.m_height == image.m_height);
+
+	Buffer2D<Color> ret = CreateBuffer2D<Color>(image.m_width, image.m_height);
+
+	int w = shift_vec_and_dist.m_width, h = shift_vec_and_dist.m_height;
+	for (int i = 0; i < w; i++) {
+		for (int j = 0; j < h; j++) {
+			auto cur_vdis = shift_vec_and_dist(i, j);
+			int dist = cur_vdis.z;
+			float m = REJECT_KAPPA * dist - REJECT_ETA;
+			float alpha_p = clamp(BLEND_ALPHA * (1 - m));
+			if (cur_vdis.x == -1) {
+				alpha_p = 0;
+			}
+			const Vec2 &cur_shift = Vec2(cur_vdis.x, cur_vdis.y);
+			const Color &pre_acc = acc_color(i + cur_shift.x, j + cur_shift.y);
+			ret(i, j) = lerp(pre_acc, image(i, j), alpha_p);
 		}
 	}
 	return ret;
 }
 
-Buffer2D<Color> Impl::reproject_kernel(const Buffer2D<Vec2> &shift_vec) {
-	
+array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
+	const FrameInfo &frame) {
+	auto discard_zcomp = [](const Buffer2D<Vec3> &buffer) {
+		auto ret = CreateBuffer2D<Vec2>(buffer.m_width, buffer.m_height);
+		for (int i = 0; i < buffer.m_width; i++) {
+			for (int j = 0; j < buffer.m_height; j++) {
+				ret(i, j) = Vec2(buffer(i, j).x, buffer(i, j).y);
+			}
+		}
+		return ret;
+	};
+
+	array<BufferInOnePass, HIER_LEVEL> ret;
+	if (is_first_frame) {
+		is_first_frame = false;
+		BufferInOnePass tmp;
+		tmp.is_first_frame = true;
+		ret.fill(tmp);
+		return ret;
+	}
+	auto &image = frame.m_beauty;
+	float sc = 1.0 / pow(HIER_REDUC_FACTOR, HIER_LEVEL - 1);
+	for (int i = HIER_LEVEL - 1; i >= 0; i--, sc *= HIER_REDUC_FACTOR) {
+		auto &cur_pass = ret[i];
+		if (i == 0) {
+			cur_pass.is_first_frame = false;
+			cur_pass.scale_img = image;
+		} else {
+			cur_pass.scale_img = scale_img(image, sc);
+		}
+		Buffer2D<Vec2> base_shift;
+		if (i != HIER_LEVEL - 1) {
+			base_shift = discard_zcomp(ret[i + 1].merge_kernel_subpixel);
+		} else {
+			base_shift = CreateBuffer2D<Vec2>(image.m_width, image.m_height);
+		}
+		cur_pass.dist_kernel = dist_kernel(cur_pass.scale_img, base_shift);
+		cur_pass.blur_kernel = blur_kernel(cur_pass.dist_kernel);
+		cur_pass.merge_kernel_integer =
+			merge_kernel_integer(cur_pass.blur_kernel, base_shift);
+		cur_pass.merge_kernel_subpixel = merge_kernel_subpixel(
+			cur_pass.blur_kernel, cur_pass.merge_kernel_integer);
+		cur_pass.reproject_kernel =
+			reproject_kernel(cur_pass.merge_kernel_subpixel, cur_pass.scale_img);
+	}
 }

@@ -9,6 +9,17 @@ T lerp (const T &a, const T &b, const float &t) {
     return a * (1.0f - t) + b * t;
 }
 
+template <typename T>
+T clamp(const T &v, const T &mn, const T &mx) {
+    return std::min(std::max(v, mn), mx);
+}
+
+template <typename T>
+T clamp(const T &v, const float &t_mn = 0, const float &t_mx = 1) {
+    T mn = t_mn * v, mx = t_mx * v;
+    return clamp(v, mn, mx);
+}
+
 template<typename T>
 T lerp2d(const T &q1, const T &q2, const T &q3, const T &q4, const float &tx, const float &ty) {
     // q1~q4 are ordered in y then x
@@ -76,6 +87,10 @@ public:
     }
 
     Vec3 to3() const { return Vec3(x, y, 0); }
+    template <typename U>
+    operator Tvec2<U>() const {
+        return Tvec2<U>(static_cast<U>(x), static_cast<U>(y));
+    }
 };
 
 using Vec2 = Tvec2<float>;
@@ -150,7 +165,7 @@ Vec2 two_d_deriv(const function<float(Vec2)> &func, const Vec2 &pt, float eps = 
     return Vec2(dx, dy);
 }
 
-float two_d_grad_descent(const function<float(Vec2)> &func, const Vec2 &mn,
+Vec3 two_d_grad_descent(const function<float(Vec2)> &func, const Vec2 &mn,
 						 const Vec2 &mx, float step, int iter) {
     // gradient descent in 2d
     Vec2 cur_pt = (mn + mx) / 2;
@@ -168,5 +183,5 @@ float two_d_grad_descent(const function<float(Vec2)> &func, const Vec2 &mn,
             mn_pt = cur_pt;
         }
     }
-    return mn_val;
+    return Vec3(mn_pt.x, mn_pt.y, mn_val);
 }

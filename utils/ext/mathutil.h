@@ -11,36 +11,35 @@ inline float SafeAcos(const float &v) {
     return std::acos(std::min(std::max(v, 0.f), 1.f));
 }
 
-class Float3 {
+
+template <typename T>
+class Tvec3 {
   public:
     enum EType { Vector, Point };
-    Float3(const float &v = 0) : x(v), y(v), z(v) {}
-    Float3(const float &_x, const float &_y, const float &_z) : x(_x), y(_y), z(_z) {}
-    Float3 operator+(const Float3 &v) const { return Float3(x + v.x, y + v.y, z + v.z); }
-    Float3 operator-(const Float3 &v) const { return Float3(x - v.x, y - v.y, z - v.z); }
-    Float3 &operator+=(const Float3 &v) {
+	Tvec3(const T &v = 0) : x(v), y(v), z(v) {}
+	Tvec3(const T &_x, const T &_y, const T &_z) : x(_x), y(_y), z(_z) {}
+	Tvec3 operator+(const Tvec3 &v) const { return Tvec3(x + v.x, y + v.y, z + v.z); }
+    Tvec3 operator-(const Tvec3 &v) const { return Tvec3(x - v.x, y - v.y, z - v.z); }
+    Tvec3 &operator+=(const Tvec3 &v) {
         x += v.x;
         y += v.y;
         z += v.z;
         return *this;
     }
-    Float3 operator*(const float &v) const { return Float3(x * v, y * v, z * v); }
-    Float3 operator*(const Float3 &v) const { return Float3(x * v.x, y * v.y, z * v.z); }
-    Float3 operator/(const float &v) const {
+    Tvec3 operator*(const float &v) const { return Tvec3(x * v, y * v, z * v); }
+    Tvec3 operator*(const Tvec3 &v) const { return Tvec3(x * v.x, y * v.y, z * v.z); }
+    Tvec3 operator/(const float &v) const {
         CHECK(v != 0.0);
-        float inv = 1.0f / v;
-        return Float3(x * inv, y * inv, z * inv);
+		T inv = 1.0f / v;
+		return Tvec3(x * inv, y * inv, z * inv);
     }
-    Float3 operator/(const Float3 &v) const {
+    Tvec3 operator/(const Tvec3 &v) const {
         CHECK(v.x != 0.0);
         CHECK(v.y != 0.0);
         CHECK(v.z != 0.0);
-        float invX = 1.0f / v.x;
-        float invY = 1.0f / v.y;
-        float invZ = 1.0f / v.z;
-        return Float3(x * invX, y * invY, z * invZ);
+		return Tvec3(x / v.x, y / v.y, z / v.z);
     }
-    Float3 &operator/=(const float &v) {
+    Tvec3 &operator/=(const float &v) {
         CHECK(v != 0.0);
         float inv = 1.0f / v;
         x *= inv;
@@ -52,70 +51,97 @@ class Float3 {
     float x, y, z;
 };
 
-inline Float3 Min(const Float3 &a, const Float3 &b) {
-    return Float3(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
+using Float3 = Tvec3<float>;
+
+template <typename T>
+inline Tvec3<T> Min(const Tvec3<T> &a, const Tvec3<T> &b) {
+    return Tvec3<T>(std::min(a.x, b.x), std::min(a.y, b.y), std::min(a.z, b.z));
 }
 
-inline Float3 Max(const Float3 &a, const Float3 &b) {
-    return Float3(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
+template <typename T>
+inline Tvec3<T> Max(const Tvec3<T> &a, const Tvec3<T> &b) {
+	return Tvec3<T>(std::max(a.x, b.x), std::max(a.y, b.y), std::max(a.z, b.z));
 }
 
-inline float Dot(const Float3 &a, const Float3 &b) {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
+template <typename T>
+inline float Dot(const Tvec3<T> &a, const Tvec3<T> &b) {
+	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-inline Float3 Cross(const Float3 &a, const Float3 &b) {
-    return Float3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z,
+template <typename T>
+inline Tvec3<T> Cross(const Tvec3<T> &a, const Tvec3<T> &b) {
+	return Tvec3<T>(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z,
                   a.x * b.y - a.y * b.x);
 }
-
-inline float AbsSum(const Float3 &a, const Float3 &b) {
-    return std::fabs(a.x - b.x) + std::fabs(a.y - b.y) + std::fabs(a.z - b.z);
+template <typename T>
+inline float AbsSum(const Tvec3<T> &a, const Tvec3<T> &b) {
+	return std::fabs(a.x - b.x) + std::fabs(a.y - b.y) + std::fabs(a.z - b.z);
 }
 
-inline Float3 Abs(const Float3 &a) {
-    return Float3(std::fabs(a.x), std::fabs(a.y), std::fabs(a.z));
+template <typename T>
+inline Tvec3<T> Abs(const Tvec3<T> &a) {
+	return Tvec3<T>(std::fabs(a.x), std::fabs(a.y), std::fabs(a.z));
 }
-inline Float3 Sqr(const Float3 &a) { return Float3(Sqr(a.x), Sqr(a.y), Sqr(a.z)); }
-inline Float3 SafeSqrt(const Float3 &a) {
-    return Float3(SafeSqrt(a.x), SafeSqrt(a.y), SafeSqrt(a.z));
+template <typename T>
+inline Tvec3<T> Sqr(const Tvec3<T> &a) { return Tvec3<T>(Sqr(a.x), Sqr(a.y), Sqr(a.z)); }
+template <typename T>
+inline Tvec3<T> SafeSqrt(const Tvec3<T> &a) {
+    return Tvec3<T>(SafeSqrt(a.x), SafeSqrt(a.y), SafeSqrt(a.z));
 }
 
 // (1 - s) * u + s * v
-inline Float3 Lerp(const Float3 &u, const Float3 &v, const float &s) {
+template <typename T>
+inline Tvec3<T> Lerp(const Tvec3<T> &u, const Tvec3<T> &v, const float &s) {
     return u + (v - u) * s;
 }
-inline Float3 Clamp(const Float3 &v, const Float3 &l, const Float3 &r) {
+template <typename T>
+inline Tvec3<T> Clamp(const Tvec3<T> &v, const Tvec3<T> &l, const Tvec3<T> &r) {
     return Min(Max(v, l), r);
 }
-
-inline float SqrLength(const Float3 &a) { return Sqr(a.x) + Sqr(a.y) + Sqr(a.z); }
-inline float Length(const Float3 &a) { return std::sqrt(Sqr(a.x) + Sqr(a.y) + Sqr(a.z)); }
-inline Float3 Normalize(const Float3 &a) { return a / Length(a); }
-
-inline float SqrDistance(const Float3 &a, const Float3 &b) { return SqrLength(a - b); }
-inline float Distance(const Float3 &a, const Float3 &b) { return Length(a - b); }
-
-inline float Luminance(const Float3 &rgb) {
-    return Dot(rgb, Float3(0.2126f, 0.7152f, 0.0722f));
+template <typename T>
+inline float SqrLength(const Tvec3<T> &a) {
+	return Sqr(a.x) + Sqr(a.y) + Sqr(a.z);
 }
-inline Float3 RGB2YCoCg(const Float3 &RGB) {
-    float Co = RGB.x - RGB.z;
+
+template <typename T>
+inline float Length(const Tvec3<T> &a) {
+	return std::sqrt(Sqr(a.x) + Sqr(a.y) + Sqr(a.z));
+}
+template <typename T>
+inline Tvec3<T> Normalize(const Tvec3<T> &a) { return a / Length(a); }
+
+template <typename T>
+inline float SqrDistance(const Tvec3<T> &a, const Tvec3<T> &b) {
+	return SqrLength(a - b);
+}
+template <typename T>
+inline float Distance(const Tvec3<T> &a, const Tvec3<T> &b) {
+	return Length(a - b);
+}
+template <typename T>
+inline float Luminance(const Tvec3<T> &rgb) {
+    return Dot(rgb, Tvec3<T>(0.2126f, 0.7152f, 0.0722f));
+}
+template <typename T>
+inline Tvec3<T> RGB2YCoCg(const Tvec3<T> &RGB) {
+	float Co = RGB.x - RGB.z;
     float tmp = RGB.z + Co / 2;
     float Cg = RGB.y - tmp;
     float Y = tmp + Cg / 2;
-    return Float3(Y, Co, Cg);
+    return Tvec3<T>(Y, Co, Cg);
 }
-inline Float3 YCoCg2RGB(const Float3 &YCoCg) {
-    float tmp = YCoCg.x - YCoCg.z / 2;
+template <typename T>
+inline Tvec3<T> YCoCg2RGB(const Tvec3<T> &YCoCg) {
+	float tmp = YCoCg.x - YCoCg.z / 2;
     float G = YCoCg.z + tmp;
     float B = tmp - YCoCg.y / 2;
     float R = B + YCoCg.y;
-    return Float3(R, G, B);
+    return Tvec3<T>(R, G, B);
 }
 
-inline std::ostream &operator<<(std::ostream &os, const Float3 &v) {
-    os << "[ " << v.x << ", " << v.y << ", " << v.z << " ]";
+template <typename T>
+inline std::ostream &operator<<(std::ostream &os, const Tvec3<T> &v) {
+	os << "[ " << v.x << ", " << v.y << ", " << v.z << " ]";
     return os;
 }
 
@@ -153,11 +179,10 @@ class Matrix4x4 {
         }
         return ret;
     }
-    
 
-    Float3 operator()(const Float3 &p, const Float3::EType &type) const;
+	Float3 operator()(const Float3 &p, const Float3::EType &type) const;
 
-    float m[4][4];
+	float m[4][4];
 
   public:
     friend std::ostream &operator<<(std::ostream &os, const Matrix4x4 &mat) {
@@ -176,5 +201,6 @@ class Matrix4x4 {
     friend Matrix4x4 Transpose(const Matrix4x4 &mat);
 };
 
-using Vec3 = Float3;
-using Color = Float3;
+using Vec3 = Tvec3<float>;
+using Color = Tvec3<float>;
+using Ivec3 = Tvec3<int>;
