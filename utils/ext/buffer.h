@@ -82,8 +82,8 @@ template <typename T>
 inline T Buffer2D<T>::operator()(float x, float y) const {
 	int x0 = floor(x), y0 = floor(y);
 	int x1 = ceil(x), y1 = ceil(y);
-	T& v00 = operator()(x0, y0), v01 = operator()(x0, y1);
-	T& v10 = operator()(x1, y0), v11 = operator()(x1, y1);
+	T v00 = operator()(x0, y0), v01 = operator()(x0, y1);
+	T v10 = operator()(x1, y0), v11 = operator()(x1, y1);
 	float tx = x - x0, ty = y - y0;
 	return lerp2d(v00, v01, v10, v11, tx, ty);
 }	

@@ -9,7 +9,9 @@
             // include eigen
             "includePath": [
                 "${workspaceFolder}/**", 
-                "/usr/include/eigen3/**"
+                "/usr/include/eigen3/**",
+                "/usr/include/c++/12/**", 
+                "/usr/lib/gcc/x86_64-linux-gnu/12/include/**"
             ]
         }
     ]

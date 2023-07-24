@@ -175,7 +175,7 @@ Buffer2D<Color> Impl::reproject_kernel(const Buffer2D<Vec3> &shift_vec_and_dist,
 			auto cur_vdis = shift_vec_and_dist(i, j);
 			int dist = cur_vdis.z;
 			float m = REJECT_KAPPA * dist - REJECT_ETA;
-			float alpha_p = clamp(BLEND_ALPHA * (1 - m));
+			float alpha_p = clamp01(BLEND_ALPHA * (1 - m));
 			if (cur_vdis.x == -1) {
 				alpha_p = 0;
 			}

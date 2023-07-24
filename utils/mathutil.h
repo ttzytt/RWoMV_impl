@@ -2,7 +2,13 @@
 #include "ext/common.h"
 #include "ext/mathutil.h"
 #include <bits/stdc++.h>
-using namespace std;
+#include <Eigen/Dense>
+using std::min;
+using std::max;
+using std::vector;
+using std::array;
+using std::function;
+
 
 template<typename T> 
 T lerp (const T &a, const T &b, const float &t) {
@@ -15,9 +21,9 @@ T clamp(const T &v, const T &mn, const T &mx) {
 }
 
 template <typename T>
-T clamp(const T &v, const float &t_mn = 0, const float &t_mx = 1) {
+T clamp01(const T &v, const float &t_mn = 0, const float &t_mx = 1) {
     T mn = t_mn * v, mx = t_mx * v;
-    return clamp(v, mn, mx);
+    return clamp01(v, mn, mx);
 }
 
 template<typename T>
@@ -27,9 +33,9 @@ T lerp2d(const T &q1, const T &q2, const T &q3, const T &q4, const float &tx, co
 }
 
 float rand_float(){
-    static random_device rd;
-    static mt19937 gen(rd());
-    static uniform_real_distribution<float> dis(0, 1);
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_real_distribution<float> dis(0, 1);
     return dis(gen);
 }
 
@@ -83,7 +89,7 @@ public:
     }
     
     static Tvec2 rand_unit(){
-        return Tvec(rand_float(), rand_float()).unit();
+        return Tvec2(rand_float(), rand_float()).unit();
     }
 
     Vec3 to3() const { return Vec3(x, y, 0); }
