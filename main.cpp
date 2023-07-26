@@ -23,8 +23,8 @@ FrameInfo load_frame_info(const filesystem::path &inputDir, const int &idx) {
 
 int main(){
 	string scene_name = "cornell_box";
-    filesystem::path input_dir("./test_scenes" + scene_name + "/input");
-    filesystem::path output_dir("./test_scenes" + scene_name + "/output");
+    filesystem::path input_dir("./test_scenes/" + scene_name + "/input");
+    filesystem::path output_dir("./test_scenes/" + scene_name + "/output");
     auto&& fir_frame = load_frame_info(input_dir, 0);
     Impl algo_impl(fir_frame);
     for (int i = 1; i < FRAME_CNT; i++) {

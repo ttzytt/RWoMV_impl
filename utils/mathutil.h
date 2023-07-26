@@ -32,11 +32,11 @@ T lerp2d(const T &q1, const T &q2, const T &q3, const T &q4, const float &tx, co
     return lerp(lerp(q1, q2, tx), lerp(q3, q4, tx), ty);
 }
 
-float rand_float(){
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<float> dis(0, 1);
-    return dis(gen);
+inline float rand_float() {
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
+	static std::uniform_real_distribution<float> dis(0, 1);
+	return dis(gen);
 }
 
 template <typename T>
@@ -102,12 +102,12 @@ public:
 using Vec2 = Tvec2<float>;
 using Ivec2 = Tvec2<int>;
 
-float guassian(int x, int y, float sigma) {
+inline float guassian(int x, int y, float sigma) {
 	float coeff = 1.0 / (2 * M_PI * sigma * sigma);
 	return coeff * exp(-(x * x + y * y) / (2 * sigma * sigma));
 };
 
-array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
+inline array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 	using namespace Eigen;
 	CHECK(pts.size() == wts.size());
 	MatrixXf A(pts.size(), 6);
@@ -156,14 +156,14 @@ array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 	return ret;
 };
 
-float quadric_eval(const array<float, 6> &params, const Vec2 &pt) {
+inline float quadric_eval(const array<float, 6> &params, const Vec2 &pt) {
     auto [x, y] = pt;
     float a = params[0], b = params[1], c = params[2], d = params[3],
           e = params[4], f = params[5];
     return a * x * x + b * y * y + c * x * y + d * x + e * y + f;
 };
 
-Vec2 two_d_deriv(const function<float(Vec2)> &func, const Vec2 &pt, float eps = 1e-4) {
+inline Vec2 two_d_deriv(const function<float(Vec2)> &func, const Vec2 &pt, float eps = 1e-4) {
     // 2d derivative
     float x = pt.x, y = pt.y;
     float dx = (func(Vec2(x + eps, y)) - func(Vec2(x - eps, y))) / (2 * eps);
@@ -171,7 +171,7 @@ Vec2 two_d_deriv(const function<float(Vec2)> &func, const Vec2 &pt, float eps = 
     return Vec2(dx, dy);
 }
 
-Vec3 two_d_grad_descent(const function<float(Vec2)> &func, const Vec2 &mn,
+inline Vec3 two_d_grad_descent(const function<float(Vec2)> &func, const Vec2 &mn,
 						 const Vec2 &mx, float step, int iter) {
     // gradient descent in 2d
     Vec2 cur_pt = (mn + mx) / 2;

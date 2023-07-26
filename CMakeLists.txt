@@ -20,7 +20,16 @@ file(GLOB SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/ext/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils/ext/*.h
 )
-
+# OpenMP
+FIND_PACKAGE(OpenMP)
+if(OPENMP_FOUND)
+    message("OPENMP FOUND")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS} -O3 -march=native")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+endif()
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -ggdb3 -fsanitize=address,undefined")
 
 add_executable(RWoMV_impl ${SOURCES})
 target_link_libraries(RWoMV_impl Eigen3::Eigen)
+
