@@ -23,25 +23,31 @@ FrameInfo load_frame_info(const filesystem::path &inputDir, const int &idx) {
 
 int main(){
 	string scene_name = "cornell_box";
-    filesystem::path input_dir("./test_scenes/" + scene_name + "/input");
-    filesystem::path output_dir("./test_scenes/" + scene_name + "/output");
-    auto&& fir_frame = load_frame_info(input_dir, 0);
+	filesystem::path input_dir("/mnt/e/prog/graphics/RWoMV_impl/test_scenes/" +
+							   scene_name + "/in");
+	filesystem::path output_dir("/mnt/e/prog/graphics/RWoMV_impl/test_scenes/" +
+								scene_name + "/out");
+	auto&& fir_frame = load_frame_info(input_dir, 0);
     Impl algo_impl(fir_frame);
-    for (int i = 1; i < FRAME_CNT; i++) {
-        cout << "processing frame " << i << "/" << FRAME_CNT << "\r" << flush;
+    
+    for (int i = 0; i < FRAME_CNT; i++) {
+        cout << "processing frame " << i + 1<< "/" << FRAME_CNT << "\r" << flush;
         auto&& frame = load_frame_info(input_dir, i);
 		auto&& res_all = algo_impl.process_img(frame);
 		for (int pass = 0; pass < HIER_LEVEL; pass++){
             auto&& pass_res = res_all[pass];
             string pprefix = "pass_" + to_string(pass) + "_";
             auto filename = [&](const string& step_name){
-                return output_dir / (pprefix + step_name + "_frame" + to_string(i) + ".exr");
+                return output_dir / ("frame" + to_string(i) + ":"+ pprefix + step_name +  ".exr");
             };
+            if (i != 0)
             WriteFloat3Image(pass_res.scale_img, output_dir / filename("scale_img"));
+            if (i != 0)
             WriteFloat3Image(pass_res.merge_kernel_integer, output_dir / filename("merge_kernel_integer"));
+            if (i != 0)
             WriteFloat3Image(pass_res.merge_kernel_subpixel, output_dir / filename("merge_kernel_subpixel"));
             WriteFloat3Image(pass_res.reproject_kernel, output_dir / filename("reproject_kernel"));
-            for (int j = 0; j < HIER_LEVEL; j++){
+            for (int j = 0; j < HIER_LEVEL && i != 0; j++){
                 WriteFloatImage(pass_res.dist_kernel[j], output_dir / filename("dist_kernel_svec=" + to_string(j)));
                 WriteFloatImage(pass_res.blur_kernel[j], output_dir / filename("blur_kernel_svec=" + to_string(j)));
             }

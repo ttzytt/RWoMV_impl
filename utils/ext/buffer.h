@@ -64,6 +64,8 @@ inline void Buffer2D<T>::Copy(const Buffer2D<T> &buffer) {
 
 template <typename T>
 inline T &Buffer2D<T>::operator()(const int &x, const int &y) {
+	CHECK(m_width > 0)
+	CHECK(m_height > 0)
 	CHECK(0 <= x && x < m_width && 0 <= y && y < m_height);
 	return this->m_buffer[y * m_width + x];
 }

@@ -2,22 +2,18 @@
 
 #define NOMINMAX
 #include <execinfo.h>
-
+#include <string>
 #include <iostream>
 #define LOG(msg)                                                             \
 	std::cout << "[" << __FILE__ << ", " << __FUNCTION__ << ", " << __LINE__ \
 			  << "]: " << msg << std::endl;
 
-static inline void CHECK(bool cond) {
-	do {
-		if (!(cond)) {
-			void* callstack[128];
-			int frames_cnt = backtrace(callstack, 128);
+// force inline
+#define FORCE_INLINE __attribute__((always_inline)) inline
 
-			char** func_names = backtrace_symbols(callstack, frames_cnt);
-
-			LOG("Runtime Error.");
-			exit(-1);
-		}
-	} while (false);
+#define CHECK(cond) {\
+if (!(cond)) {\
+	LOG("Runtime Error, condition of: " + std::string(#cond) + "failed");\
+	throw std::runtime_error("Runtime Error.");\
+}\
 }

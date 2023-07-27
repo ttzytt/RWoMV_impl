@@ -23,11 +23,11 @@ T clamp(const T &v, const T &mn, const T &mx) {
 template <typename T>
 T clamp01(const T &v, const float &t_mn = 0, const float &t_mx = 1) {
     T mn = t_mn * v, mx = t_mx * v;
-    return clamp01(v, mn, mx);
+    return clamp(v, mn, mx);
 }
 
 template<typename T>
-T lerp2d(const T &q1, const T &q2, const T &q3, const T &q4, const float &tx, const float &ty) {
+T lerp2d(const T &q1, const T &q2, const T &q3, const T &q4, float tx, float ty) {
     // q1~q4 are ordered in y then x
     return lerp(lerp(q1, q2, tx), lerp(q3, q4, tx), ty);
 }
@@ -110,7 +110,7 @@ inline float guassian(int x, int y, float sigma) {
 inline array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 	using namespace Eigen;
 	CHECK(pts.size() == wts.size());
-	MatrixXf A(pts.size(), 6);
+	MatrixXf A(6, 6);
 	float phis[6][pts.size()];	// φ_i(p_j)
 	for (int i = 0; i < pts.size(); i++) {
 		auto [x, y, _] = pts[i];
@@ -122,6 +122,7 @@ inline array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 		phis[5][i] = 1;
 	}
 
+#pragma omp parallel for
 	for (int par_deriv = 0; par_deriv < 6; par_deriv++) {
 		// 6 equations for 6 partial derivatives because there are 6
 		// parameters

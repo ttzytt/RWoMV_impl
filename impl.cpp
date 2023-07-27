@@ -1,7 +1,8 @@
 #pragma once
 #include "impl.h"
-
+#include "utils/all_utils.h"
 #include <bits/stdc++.h>
+#include <dbg.h>
 
 #include <Eigen/Dense>
 using namespace std;
@@ -23,15 +24,20 @@ Buffer2D<Color> Impl::scale_img(const Buffer2D<Color> &image,
 	int w = image.m_width, h = image.m_height;
 	int nw = round(w * scale), nh = round(h * scale);
 	Buffer2D<Color> ret = CreateBuffer2D<Color>(nw, nh);
+#pragma omp parallel for
 	for (int i = 0; i < nw; i++) {
 		for (int j = 0; j < nh; j++) {
-			float target_x = i / scale, target_y = j / scale;
-			int mnx = floor(target_x), mny = floor(target_y);
+			float target_x = i / scale + .5, target_y = j / scale + .5;
+			int mnx = floor(target_x ), mny = floor(target_y);
 			int mxx = ceil(target_x), mxy = ceil(target_y);
+			mnx = max(0, mnx), mny = max(0, mny);
+			mxx = min(w - 1, mxx), mxy = min(h - 1, mxy);
+			// dbg(target_x, target_y, mnx, mny, mxx, mxy);
 			Color c_x0y0 = image(mnx, mny), c_x1y0 = image(mxx, mny);
 			Color c_x0y1 = image(mnx, mxy), c_x1y1 = image(mxx, mxy);
-			float tx = target_x / (mxx - mnx);
-			float ty = target_y / (mxy - mny);
+			float tx = (target_x - mnx) / (mxx - mnx);
+			float ty = (target_y - mny) / (mxy - mny);
+			// dbg(i, j, mnx, mxx, mny, mxy, tx, ty);
 			ret(i, j) = lerp2d(c_x0y0, c_x1y0, c_x0y1, c_x1y1, tx, ty);
 		}
 	}
@@ -42,7 +48,8 @@ vector<Buffer2D<float>> Impl::dist_kernel(const Buffer2D<Color> &image,
 										  const Buffer2D<Vec2> &base_shiftv) {
 	vector<Buffer2D<float>> ret(single_layer_shift_vecs.size());
 	for (int i = 0; i < single_layer_shift_vecs.size(); i++)
-		ret.push_back(CreateBuffer2D<float>(image.m_width, image.m_height));
+		ret[i] = CreateBuffer2D<float>(image.m_width, image.m_height);
+#pragma omp parallel for
 	for (int sv = 0; sv < single_layer_shift_vecs.size(); sv++) {
 		auto [dx, dy] = single_layer_shift_vecs[sv];
 		for (int i = 0; i < image.m_width; i++) {
@@ -59,12 +66,14 @@ vector<Buffer2D<float>> Impl::dist_kernel(const Buffer2D<Color> &image,
 			}
 		}
 	}
+	return ret;
 }
 
 vector<Buffer2D<float>> Impl::blur_kernel(
 	const vec_of_img<float> &dist_output) {
 	auto ret = vec_of_img<float>();
 	int w = dist_output[0].m_width, h = dist_output[0].m_height;
+#pragma omp parallel for
 	for (auto &cur_dis : dist_output) {
 		auto cur_ret = CreateBuffer2D<float>(w, h);
 		fill(cur_ret.m_buffer.get(), cur_ret.m_buffer.get() + cur_ret.m_size,
@@ -99,6 +108,7 @@ Buffer2D<Vec3> Impl::merge_kernel_integer(const vec_of_img<float> &blur_output,
 	fill(ret.m_buffer.get(), ret.m_buffer.get() + ret.m_size, Vec3(-1, -1, -1));
 	// x, y => shift vector, z => distance
 	// in each pixel find the minimum distance and corresponding shift vector
+#pragma omp parallel for
 	for (int cx = 0; cx < w; cx++) {
 		for (int cy = 0; cy < h; cy++) {
 			float min_dis = 1e9;
@@ -129,7 +139,7 @@ Buffer2D<Vec3> Impl::merge_kernel_subpixel(
 
 	int w = blur_output[0].m_width, h = blur_output[0].m_height;
 	Buffer2D<Vec3> ret = CreateBuffer2D<Vec3>(w, h);
-
+#pragma omp parallel for
 	for (int cx = 0; cx < w; cx++) {
 		for (int cy = 0; cy < h; cy++) {
 			vector<Vec3> pts;
@@ -158,8 +168,8 @@ Buffer2D<Vec3> Impl::merge_kernel_subpixel(
 				MERGE_KERNEL_DESC_ITER);
 			ret(cx, cy) = sub_pix_shiftvec_and_val;
 		}
-		return ret;
 	}
+	return ret;
 }
 
 Buffer2D<Color> Impl::reproject_kernel(const Buffer2D<Vec3> &shift_vec_and_dist,
@@ -170,6 +180,7 @@ Buffer2D<Color> Impl::reproject_kernel(const Buffer2D<Vec3> &shift_vec_and_dist,
 	Buffer2D<Color> ret = CreateBuffer2D<Color>(image.m_width, image.m_height);
 
 	int w = shift_vec_and_dist.m_width, h = shift_vec_and_dist.m_height;
+#pragma omp parallel for
 	for (int i = 0; i < w; i++) {
 		for (int j = 0; j < h; j++) {
 			auto cur_vdis = shift_vec_and_dist(i, j);
@@ -203,6 +214,7 @@ array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 	if (is_first_frame) {
 		is_first_frame = false;
 		BufferInOnePass tmp;
+		tmp.reproject_kernel = frame.m_beauty;
 		tmp.is_first_frame = true;
 		ret.fill(tmp);
 		return ret;
@@ -214,8 +226,8 @@ array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 		if (i == 0) {
 			cur_pass.is_first_frame = false;
 			cur_pass.scale_img = image;
-		} else {
-			cur_pass.scale_img = scale_img(image, sc);
+		} else {   
+			cur_pass.scale_img.Copy(scale_img(image, sc));
 		}
 		Buffer2D<Vec2> base_shift;
 		if (i != HIER_LEVEL - 1) {

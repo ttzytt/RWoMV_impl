@@ -30,9 +30,9 @@ class Impl {
 	};
 
 	Impl(const FrameInfo &first_frame);
-	Buffer2D<Color> scale_img(const Buffer2D<Color> &image, const float scale);
+	static Buffer2D<Color> scale_img(const Buffer2D<Color> &image, const float scale);
 	vec_of_img<float> dist_kernel(const Buffer2D<Color> &image, const Buffer2D<Vec2> &base_shiftv);
-	vec_of_img<float> blur_kernel(const vec_of_img<float> &dist_output);
+	static vec_of_img<float> blur_kernel(const vec_of_img<float> &dist_output);
 
 	Buffer2D<Vec3> merge_kernel_integer(const vec_of_img<float> &blur_output,
 										const Buffer2D<Vec2> &base_shiftv);
