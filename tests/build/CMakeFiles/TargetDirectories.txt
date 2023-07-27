@@ -1,3 +1,0 @@
-/mnt/e/prog/graphics/RWoMV_impl/tests/build/CMakeFiles/RWoMV_test.dir
-/mnt/e/prog/graphics/RWoMV_impl/tests/build/CMakeFiles/edit_cache.dir
-/mnt/e/prog/graphics/RWoMV_impl/tests/build/CMakeFiles/rebuild_cache.dir
