@@ -35,7 +35,8 @@ float *ReadImage(const std::string &filename, int &width, int &height,
                 buffer[i * channel + j] = out[i * 4 + j];
             }
         }
-        delete[] out; // release memory of image data
+        free(out); // release memory of image data
+        // not using delete[] because OpenEXR's memory allocator is malloc
     }
     return buffer;
 }

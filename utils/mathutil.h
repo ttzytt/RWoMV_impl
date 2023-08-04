@@ -1,35 +1,57 @@
 #pragma once
+#include <bits/stdc++.h>
+
+#include <Eigen/Dense>
+
 #include "ext/common.h"
 #include "ext/mathutil.h"
-#include <bits/stdc++.h>
-#include <Eigen/Dense>
-using std::min;
-using std::max;
-using std::vector;
 using std::array;
 using std::function;
+using std::max;
+using std::min;
+using std::vector;
+using std::clamp;
+using std::cout;
+using std::ostream;
+template <typename T>
+T lerp(const T &a, const T &b, const float &t) {
+	return a * (1.0f - t) + b * t;
+}
 
+// template <typename T>
+// T clamp01(const T &v, const float &t_mn = 0, const float &t_mx = 1) {
+// 	T mn = t_mn * v, mx = t_mx * v;
+// 	return clamp(v, mn, mx);
+// }
 
-template<typename T> 
-T lerp (const T &a, const T &b, const float &t) {
-    return a * (1.0f - t) + b * t;
+template <typename T>
+T lerp2d(const T &q1, const T &q2, const T &q3, const T &q4, float tx,
+		 float ty) {
+	// q1~q4 are ordered in y then x
+	return lerp(lerp(q1, q2, tx), lerp(q3, q4, tx), ty);
 }
 
 template <typename T>
-T clamp(const T &v, const T &mn, const T &mx) {
-    return std::min(std::max(v, mn), mx);
+T calc_sqrlen(const T &a, const T &b) {
+	return (a - b) * (a - b);
 }
 
 template <typename T>
-T clamp01(const T &v, const float &t_mn = 0, const float &t_mx = 1) {
-    T mn = t_mn * v, mx = t_mx * v;
-    return clamp(v, mn, mx);
+T calc_var(const std::vector<T> &vec, const T &ave) {
+	T tmp;
+	for (auto &v : vec) {
+		tmp += calc_sqrlen(v, ave);
+	}
+	return tmp / vec.size();
 }
 
-template<typename T>
-T lerp2d(const T &q1, const T &q2, const T &q3, const T &q4, float tx, float ty) {
-    // q1~q4 are ordered in y then x
-    return lerp(lerp(q1, q2, tx), lerp(q3, q4, tx), ty);
+template <typename T>
+T calc_ave(const std::vector<T> &vec) {
+	T sum;
+	for (auto &v : vec) {
+		sum += v;
+	}
+	return sum / (float)vec.size();
 }
 
 inline float rand_float() {
@@ -40,63 +62,73 @@ inline float rand_float() {
 }
 
 template <typename T>
-class Tvec2{
-public:
-    T x, y;
-    Tvec2(const T &x, const T &y) : x(x), y(y) {}
-    Tvec2(const T &v = 0) : x(v), y(v) {}
-    Tvec2 operator+(const Tvec2 &v) const { return Tvec2(x + v.x, y + v.y); }
-    Tvec2 &operator+=(const Tvec2 &v) {
-        x += v.x;
-        y += v.y;
-        return *this;
-    }
-    Tvec2 operator-(const Tvec2 &v) const { return Tvec2(x - v.x, y - v.y); }
-    Tvec2 operator-() const { return Tvec2(-x, -y); }
-    Tvec2 &operator-=(const Tvec2 &v) {
-        return *this += -v;
-    }
-    Tvec2 operator*(const T &v) const { return Tvec2(x * v, y * v); }
-    Tvec2 operator/(const T &v) const {
-        CHECK(v != 0.0);
-        float inv = 1.0f / v;
-        return Tvec2(x * inv, y * inv);
-    }
-    Tvec2 &operator/=(const T &v) {
-        CHECK(v != 0.0);
-        T inv = 1.0f / v;
-        x *= inv;
-        y *= inv;
-        return *this;
-    }
+class Tvec2 {
+   public:
+	T x, y;
+	Tvec2(const T &x, const T &y) : x(x), y(y) {}
+	explicit Tvec2(const T &v = 0) : x(v), y(v) {}
+	Tvec2 operator+(const Tvec2 &v) const { return Tvec2(x + v.x, y + v.y); }
+	Tvec2 &operator+=(const Tvec2 &v) {
+		x += v.x;
+		y += v.y;
+		return *this;
+	}
+	Tvec2 operator-(const Tvec2 &v) const { return Tvec2(x - v.x, y - v.y); }
+	Tvec2 operator-() const { return Tvec2(-x, -y); }
+	Tvec2 &operator-=(const Tvec2 &v) { return *this += -v; }
+	Tvec2 operator*(const T &v) const { return Tvec2(x * v, y * v); }
+	Tvec2 &operator*=(const T &v) {
+		x *= v;
+		y *= v;
+		return *this;
+	}
+	Tvec2 operator/(const T &v) const {
+		CHECK(v != 0.0);
+		float inv = 1.0f / v;
+		return Tvec2(x * inv, y * inv);
+	}
+	Tvec2 &operator/=(const T &v) {
+		CHECK(v != 0.0);
+		T inv = 1.0f / v;
+		x *= inv;
+		y *= inv;
+		return *this;
+	}
 
-    bool operator==(const Tvec2 &v) const { return x == v.x && y == v.y; }
-    bool operator!=(const Tvec2 &v) const { return !(*this == v); }
-    bool operator<(const Tvec2 &v) const { return x < v.x && y < v.y; }
-    bool operator>(const Tvec2 &v) const { return x > v.x && y > v.y; }
-    bool operator<=(const Tvec2 &v) const { return x <= v.x && y <= v.y; }
-    bool operator>=(const Tvec2 &v) const { return x >= v.x && y >= v.y; }
+	bool operator==(const Tvec2 &v) const { return x == v.x && y == v.y; }
+	bool operator!=(const Tvec2 &v) const { return !(*this == v); }
+	bool operator<(const Tvec2 &v) const { return x < v.x && y < v.y; }
+	bool operator>(const Tvec2 &v) const { return x > v.x && y > v.y; }
+	bool operator<=(const Tvec2 &v) const { return x <= v.x && y <= v.y; }
+	bool operator>=(const Tvec2 &v) const { return x >= v.x && y >= v.y; }
 
-    T len(){
-        return sqrt(x * x + y * y);
-    }
-    T sqr_len(){
-        return x * x + y * y;
-    }
+	ostream &operator<<(ostream &os) const {
+		os << "(" << x << ", " << y << ")";
+		return os;
+	}
 
-    Tvec2 unit(){
-        return *this / len();
-    }
-    
-    static Tvec2 rand_unit(){
-        return Tvec2(rand_float(), rand_float()).unit();
-    }
+	T len() { return sqrt(x * x + y * y); }
+	T sqr_len() { return x * x + y * y; }
 
-    Vec3 to3() const { return Vec3(x, y, 0); }
-    template <typename U>
-    operator Tvec2<U>() const {
-        return Tvec2<U>(static_cast<U>(x), static_cast<U>(y));
-    }
+	Tvec2 unit() { return *this / len(); }
+
+	static Tvec2 rand_unit() {
+		return Tvec2(rand_float(), rand_float()).unit();
+	}
+
+	Vec3 to3() const { return Vec3(x, y, 0); }
+	template <typename U>
+	operator Tvec2<U>() const {
+		return Tvec2<U>(static_cast<U>(x), static_cast<U>(y));
+	}
+
+	static Tvec2 min(const Tvec2 &a, const Tvec2 &b) {
+		return Tvec2(std::min(a.x, b.x), std::min(a.y, b.y));
+	}
+	static Tvec2 max(const Tvec2 &a, const Tvec2 &b) {
+		return Tvec2(std::max(a.x, b.x), std::max(a.y, b.y));
+	}
+
 };
 
 using Vec2 = Tvec2<float>;
@@ -158,37 +190,50 @@ inline array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 };
 
 inline float quadric_eval(const array<float, 6> &params, const Vec2 &pt) {
-    auto [x, y] = pt;
-    float a = params[0], b = params[1], c = params[2], d = params[3],
-          e = params[4], f = params[5];
-    return a * x * x + b * y * y + c * x * y + d * x + e * y + f;
+	auto [x, y] = pt;
+	float a = params[0], b = params[1], c = params[2], d = params[3],
+		  e = params[4], f = params[5];
+	return a * x * x + b * y * y + c * x * y + d * x + e * y + f;
 };
 
-inline Vec2 two_d_deriv(const function<float(Vec2)> &func, const Vec2 &pt, float eps = 1e-4) {
-    // 2d derivative
-    float x = pt.x, y = pt.y;
-    float dx = (func(Vec2(x + eps, y)) - func(Vec2(x - eps, y))) / (2 * eps);
-    float dy = (func(Vec2(x, y + eps)) - func(Vec2(x, y - eps))) / (2 * eps);
-    return Vec2(dx, dy);
+inline Vec2 two_d_deriv(const function<float(Vec2)> &func, const Vec2 &pt,
+						float eps = 1e-4) {
+	// 2d derivative
+	float x = pt.x, y = pt.y;
+	float dx = (func(Vec2(x + eps, y)) - func(Vec2(x - eps, y))) / (2 * eps);
+	float dy = (func(Vec2(x, y + eps)) - func(Vec2(x, y - eps))) / (2 * eps);
+	return Vec2(dx, dy);
 }
 
-inline Vec3 two_d_grad_descent(const function<float(Vec2)> &func, const Vec2 &mn,
-						 const Vec2 &mx, float step, int iter) {
-    // gradient descent in 2d
-    Vec2 cur_pt = (mn + mx) / 2;
-    Vec2 mn_pt = cur_pt;
-    float mn_val = func(cur_pt);
-    while(iter--){
-        auto[dx, dy] = two_d_deriv(func, cur_pt);
-        cur_pt -= Vec2(dx, dy) * step;
-        if (cur_pt > mx || cur_pt < mn){
-            cur_pt = (mn + mx) / 2 + Vec2::rand_unit() * step * 5;
-        }
-        float cur_val = func(cur_pt);
-        if (cur_val < mn_val){
-            mn_val = cur_val;
-            mn_pt = cur_pt;
-        }
-    }
-    return Vec3(mn_pt.x, mn_pt.y, mn_val);
+inline Vec3 two_d_grad_descent(const function<float(Vec2)> &func,
+							   const Vec2 &mn, const Vec2 &mx, float step,
+							   int iter) {
+	// gradient descent in 2d
+	Vec2 cur_pt = (mn + mx) / 2;
+	Vec2 mn_pt = cur_pt;
+	float mn_val = func(cur_pt);
+	while (iter--) {
+		auto [dx, dy] = two_d_deriv(func, cur_pt);
+		cur_pt -= Vec2(dx, dy) * step;
+		if (cur_pt > mx || cur_pt < mn) {
+			cur_pt = (mn + mx) / 2 + Vec2::rand_unit() * step * 5;
+		}
+		float cur_val = func(cur_pt);
+		if (cur_val < mn_val) {
+			mn_val = cur_val;
+			mn_pt = cur_pt;
+		}
+	}
+	return Vec3(mn_pt.x, mn_pt.y, mn_val);
+}
+
+template <typename T>
+Tvec3<T> clamp(const Tvec3<T> &v, const Tvec3<T> &mn, const Tvec3<T> &mx) {
+	return Tvec3<T>(clamp(v.x, mn.x, mx.x), clamp(v.y, mn.y, mx.y),
+					clamp(v.z, mn.z, mx.z));
+}
+
+template <typename T>
+Tvec2<T> clamp(const Tvec2<T> &v, const Tvec2<T> &mn, const Tvec2<T> &mx) {
+	return Tvec2<T>(clamp(v.x, mn.x, mx.x), clamp(v.y, mn.y, mx.y));
 }

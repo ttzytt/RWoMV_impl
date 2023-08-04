@@ -2,8 +2,10 @@
 
 #include <cmath>
 #include <cstring>
-
+#include <iostream>
 #include "./common.h"
+using std::cout;
+using std::ostream;
 
 inline float Sqr(const float &v) { return v * v; }
 inline float SafeSqrt(const float &v) { return std::sqrt(std::max(v, 0.f)); }
@@ -16,7 +18,7 @@ template <typename T>
 class Tvec3 {
   public:
     enum EType { Vector, Point };
-	Tvec3(const T &v = 0) : x(v), y(v), z(v) {}
+	explicit Tvec3(const T &v = 0) : x(v), y(v), z(v) {}
 	Tvec3(const T &_x, const T &_y, const T &_z) : x(_x), y(_y), z(_z) {}
 	Tvec3 operator+(const Tvec3 &v) const { return Tvec3(x + v.x, y + v.y, z + v.z); }
     Tvec3 operator-(const Tvec3 &v) const { return Tvec3(x - v.x, y - v.y, z - v.z); }
@@ -27,6 +29,12 @@ class Tvec3 {
         return *this;
     }
     Tvec3 operator*(const float &v) const { return Tvec3(x * v, y * v, z * v); }
+    Tvec3 operator*=(const float &v) {
+        x *= v;
+        y *= v;
+        z *= v;
+        return *this;
+    }
     Tvec3 operator*(const Tvec3 &v) const { return Tvec3(x * v.x, y * v.y, z * v.z); }
     Tvec3 operator/(const float &v) const {
         CHECK(v != 0.0);
@@ -46,6 +54,15 @@ class Tvec3 {
         y *= inv;
         z *= inv;
         return *this;
+    }
+
+    bool operator==(const Tvec3<T> other){
+        return x == other.x && y == other.y && z == other.z;
+    }
+    
+    ostream &operator<<(ostream &os) {
+        os << "(" << x << ", " << y << ", " << z << ")";
+        return os;
     }
 
     float x, y, z;
