@@ -61,7 +61,10 @@ int main() {
 			if (i != 0)
 				WriteFloat3Image(pass_res.merge_kernel_integer.normalize(),
 								 output_dir / filename("merge_kernel_integer"));
-
+			if (i != 0)
+				WriteFloat3Image(
+					pass_res.merge_kernel_subpixel.normalize(),
+					output_dir / filename("merge_kernel_subpixel"));
 			auto dist_after_shift =
 				CreateBuffer2D<float>(pass_res.merge_kernel_integer.m_width,
 									  pass_res.merge_kernel_integer.m_height);
@@ -73,9 +76,9 @@ int main() {
 				}
 			}
 
-            if (i != 0)
-                WriteFloatImage(dist_after_shift,
-                                output_dir / filename("dist_after_shift"));
+			if (i != 0)
+				WriteFloatImage(dist_after_shift,
+								output_dir / filename("dist_after_shift"));
 
 			// if (i != 0)
 			// WriteFloat3Image(pass_res.merge_kernel_subpixel, output_dir /

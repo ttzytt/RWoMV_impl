@@ -148,7 +148,10 @@ Buffer2D<Vec3> Impl::merge_kernel_subpixel(
 				_quadric_eval, Vec2(cx, cy) - Vec2(MERGE_KERNEL_RAD),
 				Vec2(cx, cy) + Vec2(MERGE_KERNEL_RAD), MERGE_KERNEL_DESC_STEP,
 				MERGE_KERNEL_DESC_ITER);
-			ret(cx, cy) = sub_pix_shiftvec_and_val;
+
+			// dbg(cx, cy, sub_pix_shiftvec_and_val);
+			ret(cx, cy) = sub_pix_shiftvec_and_val - Vec3(cx, cy, 0);
+			// dbg(merge_int_output(cx, cy), ret(cx, cy));
 		}
 	}
 	return ret;
@@ -254,17 +257,19 @@ array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 		cur_pass.blur_kernel = blur_kernel(cur_pass.dist_kernel);
 		cur_pass.merge_kernel_integer =
 			merge_kernel_integer(cur_pass.blur_kernel, base_shift);
-		// cur_pass.merge_kernel_subpixel = merge_kernel_subpixel(
-		// 	cur_pass.blur_kernel, cur_pass.merge_kernel_integer);yr
+		if (USE_SUB_PIXEL)
+			cur_pass.merge_kernel_subpixel = merge_kernel_subpixel(
+			cur_pass.blur_kernel, cur_pass.merge_kernel_integer);
 
 		cur_pass.overall_shiftv = base_shift;
 		auto overall_with_dis = CreateBuffer2D<Vec3>(
 			cur_pass.overall_shiftv.m_width, cur_pass.overall_shiftv.m_height);
-		for (int i = 0; i < cur_pass.overall_shiftv.m_size; i++) {
-			auto[curdx, curdy, _] = cur_pass.merge_kernel_integer(i);
-			cur_pass.overall_shiftv(i) += Vec2(curdx, curdy);
-			auto [x, y] = cur_pass.overall_shiftv(i);
-			overall_with_dis(i) = Vec3(x, y, cur_pass.merge_kernel_integer(i).z);
+		for (int j = 0; j < cur_pass.overall_shiftv.m_size; j++) {
+			auto[curdx, curdy, dis] = USE_SUB_PIXEL	&& i < HIER_REFINE_AFTER
+						 ? cur_pass.merge_kernel_subpixel(j) : cur_pass.merge_kernel_integer(j);
+			cur_pass.overall_shiftv(j) += Vec2(curdx, curdy);
+			auto [x, y] = cur_pass.overall_shiftv(j);
+			overall_with_dis(j) = Vec3(x, y, dis);
 		}
 
 		auto[rep_img, rep_alpha] =

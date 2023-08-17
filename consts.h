@@ -36,6 +36,8 @@ const array<DIS_FUNC_SIG, 4> DIS_FUNCS{L1_FUNC, L2_FUNC, LOG_L1_FUNC,
 const DIS_TYPES DIS_TYPE = LOG_L1C;
 const auto DIS_FUNC = DIS_FUNCS[DIS_TYPE];
 
+const bool USE_SUB_PIXEL = true;
+
 // kernel parameters
 
 const int MAX_SHIFT_VEC_MAG = 2;  // s = [-2, 2]^2
@@ -45,7 +47,7 @@ const float BLUR_KERNEL_GUASSIAN_SIGMA = 1.0;
 const float MERGE_KERNEL_SIGMA = 1.0;
 const int MERGE_KERNEL_RAD = 3;
 const float MERGE_KERNEL_DESC_STEP = .05;
-const float MERGE_KERNEL_DESC_ITER = 50;
+const int MERGE_KERNEL_DESC_ITER = 50;
 
 // blending and rejection parameters
 const float BLEND_ALPHA = 0.7;

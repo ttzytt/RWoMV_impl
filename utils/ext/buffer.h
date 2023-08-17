@@ -104,7 +104,7 @@ inline T Buffer2D<T>::operator()(float x, float y) const {
 	if (x == int(x) && y == int(y)) {
 		return operator()(int(x), int(y));
 	}
-	dbg("float used");
+	// dbg("float used");
 	int x0 = floor(x), y0 = floor(y);
 	int x1 = ceil(x), y1 = ceil(y);
 	x0 = std::max(x0, 0), y0 = std::max(y0, 0);

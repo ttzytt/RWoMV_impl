@@ -158,7 +158,7 @@ inline Tvec3<T> YCoCg2RGB(const Tvec3<T> &YCoCg) {
 
 template <typename T>
 inline std::ostream &operator<<(std::ostream &os, const Tvec3<T> &v) {
-	os << "[ " << v.x << ", " << v.y << ", " << v.z << " ]";
+	os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
     return os;
 }
 

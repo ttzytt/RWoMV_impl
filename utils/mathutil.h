@@ -6,13 +6,13 @@
 #include "ext/common.h"
 #include "ext/mathutil.h"
 using std::array;
+using std::clamp;
+using std::cout;
 using std::function;
 using std::max;
 using std::min;
-using std::vector;
-using std::clamp;
-using std::cout;
 using std::ostream;
+using std::vector;
 template <typename T>
 T lerp(const T &a, const T &b, const float &t) {
 	return a * (1.0f - t) + b * t;
@@ -128,11 +128,17 @@ class Tvec2 {
 	static Tvec2 max(const Tvec2 &a, const Tvec2 &b) {
 		return Tvec2(std::max(a.x, b.x), std::max(a.y, b.y));
 	}
-
 };
+
+template <typename T>
+inline std::ostream &operator<<(std::ostream &os, const Tvec2<T> &v) {
+	os << "(" << v.x << ", " << v.y << ")";
+	return os;
+}
 
 using Vec2 = Tvec2<float>;
 using Ivec2 = Tvec2<int>;
+
 
 inline float guassian(int x, int y, float sigma) {
 	float coeff = 1.0 / (2 * M_PI * sigma * sigma);
@@ -142,7 +148,7 @@ inline float guassian(int x, int y, float sigma) {
 inline array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 	using namespace Eigen;
 	CHECK(pts.size() == wts.size());
-	MatrixXf A(6, 6);
+	MatrixXf A(MatrixXf::Zero(6, 6));
 	float phis[6][pts.size()];	// φ_i(p_j)
 	for (int i = 0; i < pts.size(); i++) {
 		auto [x, y, _] = pts[i];
@@ -158,24 +164,21 @@ inline array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 	for (int par_deriv = 0; par_deriv < 6; par_deriv++) {
 		// 6 equations for 6 partial derivatives because there are 6
 		// parameters
-		for (int j = 0; j < pts.size(); j++) {
-			// these two loops are for locating different entries of the
-			// matrix
-			for (int quadric_term = 0; quadric_term < 6; quadric_term++) {
-				// for different terms in the quadric equation
-				for (int data_idx = 0; data_idx < pts.size(); data_idx++) {
-					// these two terms are for calculating each entries of
-					// the matrix entry = sum(w_data_idx *
-					// φ_quadrict(p_data_idx) * φ_quadrict(p_data_idx))
-					A(par_deriv, quadric_term) += wts[data_idx] *
-												  phis[quadric_term][data_idx] *
-												  phis[par_deriv][data_idx];
-				}
+
+		for (int quadric_term = 0; quadric_term < 6; quadric_term++) {
+			// for different terms in the quadric equation
+			for (int data_idx = 0; data_idx < pts.size(); data_idx++) {
+				// these two terms are for calculating each entries of
+				// the matrix entry = sum(w_data_idx *
+				// φ_quadrict(p_data_idx) * φ_quadrict(p_data_idx))
+				A(par_deriv, quadric_term) += wts[data_idx] *
+											  phis[quadric_term][data_idx] *
+											  phis[par_deriv][data_idx];
 			}
 		}
 	}
 
-	VectorXf b(6);
+	VectorXf b(VectorXf::Zero(6));
 	for (int eq_idx = 0; eq_idx < 6; eq_idx++) {
 		for (int data_idx = 0; data_idx < pts.size(); data_idx++) {
 			b(eq_idx) +=
@@ -183,9 +186,10 @@ inline array<float, 6> quadric_fit(vector<Vec3> pts, vector<float> wts) {
 			// pts.z <=> f(p)
 		}
 	}
-	VectorXf quadric_params = A.colPivHouseholderQr().solve(b);
+	VectorXf quadric_params = A.fullPivHouseholderQr().solve(b);
 	array<float, 6> ret;
 	for (int i = 0; i < 6; i++) ret[i] = quadric_params(i);
+	// assert(A * quadric_params == b);	// check if the solution is correct
 	return ret;
 };
 
@@ -215,7 +219,7 @@ inline Vec3 two_d_grad_descent(const function<float(Vec2)> &func,
 	while (iter--) {
 		auto [dx, dy] = two_d_deriv(func, cur_pt);
 		cur_pt -= Vec2(dx, dy) * step;
-		if (cur_pt > mx || cur_pt < mn) {
+		if (cur_pt.x > mx.x || cur_pt.y > mx.y || cur_pt.x < mn.x || cur_pt.y < mn.y) {
 			cur_pt = (mn + mx) / 2 + Vec2::rand_unit() * step * 5;
 		}
 		float cur_val = func(cur_pt);
