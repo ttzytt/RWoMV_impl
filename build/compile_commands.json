@@ -1,0 +1,32 @@
+[
+{
+  "directory": "/mnt/e/prog/graphics/RWoMV_impl/build",
+  "command": "/usr/bin/g++  -I/mnt/e/prog/graphics/RWoMV_impl -I/mnt/e/prog/graphics/RWoMV_impl/utils -I/mnt/e/prog/graphics/RWoMV_impl/utils/ext -isystem /usr/include/eigen3  -fopenmp -O3 -march=native -ggdb3 -fsanitize=address -std=gnu++20 -o CMakeFiles/RWoMV_impl.dir/impl.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/impl.cpp",
+  "file": "/mnt/e/prog/graphics/RWoMV_impl/impl.cpp"
+},
+{
+  "directory": "/mnt/e/prog/graphics/RWoMV_impl/build",
+  "command": "/usr/bin/g++  -I/mnt/e/prog/graphics/RWoMV_impl -I/mnt/e/prog/graphics/RWoMV_impl/utils -I/mnt/e/prog/graphics/RWoMV_impl/utils/ext -isystem /usr/include/eigen3  -fopenmp -O3 -march=native -ggdb3 -fsanitize=address -std=gnu++20 -o CMakeFiles/RWoMV_impl.dir/main.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/main.cpp",
+  "file": "/mnt/e/prog/graphics/RWoMV_impl/main.cpp"
+},
+{
+  "directory": "/mnt/e/prog/graphics/RWoMV_impl/build",
+  "command": "/usr/bin/g++  -I/mnt/e/prog/graphics/RWoMV_impl -I/mnt/e/prog/graphics/RWoMV_impl/utils -I/mnt/e/prog/graphics/RWoMV_impl/utils/ext -isystem /usr/include/eigen3  -fopenmp -O3 -march=native -ggdb3 -fsanitize=address -std=gnu++20 -o CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp",
+  "file": "/mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp"
+},
+{
+  "directory": "/mnt/e/prog/graphics/RWoMV_impl/build",
+  "command": "/usr/bin/g++  -I/mnt/e/prog/graphics/RWoMV_impl -I/mnt/e/prog/graphics/RWoMV_impl/utils -I/mnt/e/prog/graphics/RWoMV_impl/utils/ext -isystem /usr/include/eigen3  -fopenmp -O3 -march=native -ggdb3 -fsanitize=address -std=gnu++20 -o CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp",
+  "file": "/mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp"
+},
+{
+  "directory": "/mnt/e/prog/graphics/RWoMV_impl/build",
+  "command": "/usr/bin/g++  -I/mnt/e/prog/graphics/RWoMV_impl -I/mnt/e/prog/graphics/RWoMV_impl/utils -I/mnt/e/prog/graphics/RWoMV_impl/utils/ext -isystem /usr/include/eigen3  -fopenmp -O3 -march=native -ggdb3 -fsanitize=address -std=gnu++20 -o CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp",
+  "file": "/mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp"
+},
+{
+  "directory": "/mnt/e/prog/graphics/RWoMV_impl/build",
+  "command": "/usr/bin/g++  -I/mnt/e/prog/graphics/RWoMV_impl -I/mnt/e/prog/graphics/RWoMV_impl/utils -I/mnt/e/prog/graphics/RWoMV_impl/utils/ext -isystem /usr/include/eigen3  -fopenmp -O3 -march=native -ggdb3 -fsanitize=address -std=gnu++20 -o CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp",
+  "file": "/mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp"
+}
+]
