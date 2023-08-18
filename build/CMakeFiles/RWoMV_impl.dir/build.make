@@ -73,85 +73,85 @@ CMakeFiles/RWoMV_impl.dir/impl.cpp.o: CMakeFiles/RWoMV_impl.dir/flags.make
 CMakeFiles/RWoMV_impl.dir/impl.cpp.o: ../impl.cpp
 CMakeFiles/RWoMV_impl.dir/impl.cpp.o: CMakeFiles/RWoMV_impl.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/prog/graphics/RWoMV_impl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/RWoMV_impl.dir/impl.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/impl.cpp.o -MF CMakeFiles/RWoMV_impl.dir/impl.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/impl.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/impl.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/impl.cpp.o -MF CMakeFiles/RWoMV_impl.dir/impl.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/impl.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/impl.cpp
 
 CMakeFiles/RWoMV_impl.dir/impl.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/RWoMV_impl.dir/impl.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/impl.cpp > CMakeFiles/RWoMV_impl.dir/impl.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/impl.cpp > CMakeFiles/RWoMV_impl.dir/impl.cpp.i
 
 CMakeFiles/RWoMV_impl.dir/impl.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/RWoMV_impl.dir/impl.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/impl.cpp -o CMakeFiles/RWoMV_impl.dir/impl.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/impl.cpp -o CMakeFiles/RWoMV_impl.dir/impl.cpp.s
 
 CMakeFiles/RWoMV_impl.dir/main.cpp.o: CMakeFiles/RWoMV_impl.dir/flags.make
 CMakeFiles/RWoMV_impl.dir/main.cpp.o: ../main.cpp
 CMakeFiles/RWoMV_impl.dir/main.cpp.o: CMakeFiles/RWoMV_impl.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/prog/graphics/RWoMV_impl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/RWoMV_impl.dir/main.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/main.cpp.o -MF CMakeFiles/RWoMV_impl.dir/main.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/main.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/main.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/main.cpp.o -MF CMakeFiles/RWoMV_impl.dir/main.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/main.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/main.cpp
 
 CMakeFiles/RWoMV_impl.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/RWoMV_impl.dir/main.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/main.cpp > CMakeFiles/RWoMV_impl.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/main.cpp > CMakeFiles/RWoMV_impl.dir/main.cpp.i
 
 CMakeFiles/RWoMV_impl.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/RWoMV_impl.dir/main.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/main.cpp -o CMakeFiles/RWoMV_impl.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/main.cpp -o CMakeFiles/RWoMV_impl.dir/main.cpp.s
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o: CMakeFiles/RWoMV_impl.dir/flags.make
 CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o: ../utils/ext/image.cpp
 CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o: CMakeFiles/RWoMV_impl.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/prog/graphics/RWoMV_impl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp > CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp > CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.i
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp -o CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/ext/image.cpp -o CMakeFiles/RWoMV_impl.dir/utils/ext/image.cpp.s
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o: CMakeFiles/RWoMV_impl.dir/flags.make
 CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o: ../utils/ext/imageutil.cpp
 CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o: CMakeFiles/RWoMV_impl.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/prog/graphics/RWoMV_impl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp > CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp > CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.i
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp -o CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/ext/imageutil.cpp -o CMakeFiles/RWoMV_impl.dir/utils/ext/imageutil.cpp.s
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o: CMakeFiles/RWoMV_impl.dir/flags.make
 CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o: ../utils/ext/mathutil.cpp
 CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o: CMakeFiles/RWoMV_impl.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/prog/graphics/RWoMV_impl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp > CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp > CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.i
 
 CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp -o CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/ext/mathutil.cpp -o CMakeFiles/RWoMV_impl.dir/utils/ext/mathutil.cpp.s
 
 CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o: CMakeFiles/RWoMV_impl.dir/flags.make
 CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o: ../utils/mathutil.cpp
 CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o: CMakeFiles/RWoMV_impl.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/mnt/e/prog/graphics/RWoMV_impl/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o -MF CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o.d -o CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.o -c /mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp
 
 CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.i"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp > CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp > CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.i
 
 CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.s"
-	/usr/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp -o CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /mnt/e/prog/graphics/RWoMV_impl/utils/mathutil.cpp -o CMakeFiles/RWoMV_impl.dir/utils/mathutil.cpp.s
 
 # Object files for target RWoMV_impl
 RWoMV_impl_OBJECTS = \

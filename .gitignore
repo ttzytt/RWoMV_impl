@@ -1,3 +1,6 @@
 ./build/**
 ./tests/build/**
+./test_scenes/**
+*.mp4
 *.exr
+./tests/out/**

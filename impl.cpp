@@ -197,7 +197,7 @@ pair<Buffer2D<Color>, Buffer2D<float>> Impl::reproject_kernel(const Buffer2D<Vec
 			
 			ret(i, j) = lerp(image(i, j), pre_acc, alpha_p);
 
-			// ret(i, j) = clamp(ret(i, j), ave_col - var_col * VAR_CLAMP_COL_BOX, ave_col + var_col * VAR_CLAMP_COL_BOX);
+			ret(i, j) = clamp(ret(i, j), ave_col - var_col * VAR_CLAMP_COL_BOX, ave_col + var_col * VAR_CLAMP_COL_BOX);
 			// auto actual_alpha = ((ret(i, j) - image(i, j) * (1 - alpha_ret(i, j))) / pre_acc);
 			// dbg(actual_alpha, alpha_ret(i), image(i, j), pre_acc);
 			// CHECK(actual_alpha.x == actual_alpha.y == actual_alpha.z)
