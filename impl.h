@@ -91,6 +91,9 @@ class Impl {
 		}
 		return ret;
 	}
+	
+
+	Buffer2D<Vec3> filter_kernel(const FrameInfo &frame);
 
 	vec_of_img_t<float> dist_kernel(const Buffer2D<Color> &image,
 							      const Buffer2D<Color> &prev_image,
@@ -104,6 +107,7 @@ class Impl {
 
 	Buffer2D<Vec3> merge_kernel_subpixel(
 		const vec_of_img_t<float> &blur_output,
+		const Buffer2D<Vec2> &base_shiftv,
 		const Buffer2D<Vec3> &merge_int_output);
 	// for each pixel, vec3 => x: shift_vec.x (float) y: shift_vec.y (float) z:
 	// dist (float)

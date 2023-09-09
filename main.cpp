@@ -25,7 +25,7 @@ FrameInfo load_frame_info(const filesystem::path& inputDir, const int& idx) {
 }
 
 int main() {
-	string scene_name = "noise_free_cbox";
+	string scene_name = "cornell_box";
 	filesystem::path input_dir("/mnt/e/prog/graphics/RWoMV_impl/test_scenes/" +
 							   scene_name + "/in");
 	filesystem::path output_dir("/mnt/e/prog/graphics/RWoMV_impl/test_scenes/" +
@@ -61,7 +61,7 @@ int main() {
 			if (i != 0)
 				WriteFloat3Image(pass_res.merge_kernel_integer.normalize(),
 								 output_dir / filename("merge_kernel_integer"));
-			if (i != 0)
+			if (i != 0 && USE_SUB_PIXEL)
 				WriteFloat3Image(
 					pass_res.merge_kernel_subpixel.normalize(),
 					output_dir / filename("merge_kernel_subpixel"));
@@ -79,10 +79,6 @@ int main() {
 			if (i != 0)
 				WriteFloatImage(dist_after_shift,
 								output_dir / filename("dist_after_shift"));
-
-			// if (i != 0)
-			// WriteFloat3Image(pass_res.merge_kernel_subpixel, output_dir /
-			// filename("merge_kernel_subpixel"));
 			if (i != 0)
 				WriteFloat3Image(
 					to_buf_of_vec3(pass_res.overall_shiftv.normalize()),
@@ -93,15 +89,18 @@ int main() {
 			if (i != 0)
 				WriteFloatImage(pass_res.final_alpha,
 								output_dir / filename("final_alpha"));
-			for (int j = 0; j < pass_res.dist_kernel.size() && i != 0; j++) {
-				CHECK(pass_res.dist_kernel[j].m_size ==
-					  pass_res.blur_kernel[j].m_size)
+			if (i != 0) {
+				int mid_shift_idx = pass_res.dist_kernel.size() / 2;
+				CHECK(pass_res.dist_kernel[mid_shift_idx].m_size ==
+					  pass_res.blur_kernel[mid_shift_idx].m_size)
 				WriteFloatImage(
-					pass_res.dist_kernel[j],
-					output_dir / filename("dist_kernel_svec=" + to_string(j)));
+					pass_res.dist_kernel[mid_shift_idx],
+					output_dir / filename("dist_kernel_svec=" +
+										  to_string(mid_shift_idx)));
 				WriteFloatImage(
-					pass_res.blur_kernel[j],
-					output_dir / filename("blur_kernel_svec=" + to_string(j)));
+					pass_res.blur_kernel[mid_shift_idx],
+					output_dir / filename("blur_kernel_svec=" +
+										  to_string(mid_shift_idx)));
 			}
 		}
 	}

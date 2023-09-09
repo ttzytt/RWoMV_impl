@@ -42,7 +42,7 @@ T calc_var(const std::vector<T> &vec, const T &ave) {
 	for (auto &v : vec) {
 		tmp += calc_sqrlen(v, ave);
 	}
-	return tmp / vec.size();
+	return SafeSqrt(tmp / vec.size());
 }
 
 template <typename T>

@@ -96,7 +96,7 @@
         "filesystem": "cpp",
         "format" : "cpp"
     },
-    "C_Cpp.default.compilerPath": "/usr/bin/g++-12",
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc-12",
     "cmake.sourceDirectory": "${workspaceFolder}",
     "C_Cpp.errorSquiggles": "enabled",
     "C_Cpp.intelliSenseEngineFallback": "disabled",

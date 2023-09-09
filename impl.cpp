@@ -46,6 +46,70 @@ vector<Buffer2D<float>> Impl::dist_kernel(const Buffer2D<Color> &image,
 	return ret;
 }
 
+Buffer2D<Vec3> Impl::filter_kernel(const FrameInfo &frame) {
+	int w = frame.m_beauty.m_width, h = frame.m_beauty.m_height;
+	Buffer2D<Vec3> ret = CreateBuffer2D<Vec3>(w, h);
+
+	auto filter_kernel = [&](int cx, int cy) {
+		vector<pair<int, int>> idxs;
+		pair<int, int> xrg{max(0, cx - FILT_KERNEL_RAD),
+						   min(w - 1, cx + FILT_KERNEL_RAD)},
+			yrg{max(0, cy - FILT_KERNEL_RAD), min(h - 1, cy + FILT_KERNEL_RAD)};
+		for (int i = xrg.first; i < xrg.second; i++) {
+			for (int j = yrg.first; j < yrg.second; j++) idxs.push_back({i, j});
+		}
+		Float3 tot_weighted_color{0};
+		float tot_weight = .0;
+		Float3 cent_pos = frame.m_position(cx, cy);
+		Float3 cent_normal = frame.m_normal(cx, cy);
+		Float3 cent_color = frame.m_beauty(cx, cy);
+#pragma omp parallel for
+		for (auto [x, y] : idxs) {
+			Float3 cur_pos = frame.m_position(x, y);
+			Float3 cur_normal = frame.m_normal(x, y);
+			Float3 cur_color = frame.m_beauty(x, y);
+
+			float pos_term =
+				-SqrLength(cur_pos - cent_pos) / (2 * Sqr(FILT_KERNEL_SIG_COORD));
+			float color_term =
+				-SqrLength(cur_color - cent_color) / (2 * Sqr(FILT_KERNEL_SIG_COLOR));
+			float norm_dot = Dot(cur_normal, cent_normal);
+			float normal_term =
+				-Sqr(SafeAcos(norm_dot)) / (2 * Sqr(FILT_KERNEL_SIG_NORM));
+			float plane_term = 0;
+			Float3 cent2cur_vec = cur_pos - cent_pos;
+			if (SqrLength(cent2cur_vec) > .0) {
+				Float3 cent2cur_normvec = Normalize(cent2cur_vec);
+				float disp_norm_dot = Dot(cent_normal, cent2cur_normvec);
+				plane_term = -Sqr(disp_norm_dot) / (2 * Sqr(FILT_KERNEL_SIG_PLANE));
+			}
+			float weight =
+				exp(double(pos_term + color_term + normal_term + plane_term));
+			tot_weighted_color += cur_color * weight;
+			tot_weight += weight;
+		}
+		// if (tot_weight == 0.0) {
+		//     return frameInfo.m_beauty(cx, cy);
+		// }
+
+		return tot_weighted_color / tot_weight;
+	};
+
+#pragma omp parallel for
+	for (int y = 0; y < h; y++) {
+		for (int x = 0; x < w; x++) {
+			if (frame.m_normal(x, y) == Vec3(0)) {
+				ret(x, y) = Vec3(-1);
+				continue;
+			}
+			// TODO: Joint bilateral filter
+			ret(x, y) = filter_kernel(x, y);
+		}
+	}
+
+	return ret;
+}
+
 Impl::vec_of_img_t<float> Impl::blur_kernel(
 	const vec_of_img_t<float> &dist_output) {
 	auto ret = vec_of_img_t<float>(dist_output.size());
@@ -56,28 +120,19 @@ Impl::vec_of_img_t<float> Impl::blur_kernel(
 	for (int i = 0; i < dist_output.size(); i++) {
 		auto &cur_dis = dist_output[i];
 		auto cur_ret = CreateBuffer2D<float>(w, h);
-		fill(cur_ret.m_buffer.get(), cur_ret.m_buffer.get() + cur_ret.m_size,
-			 -1);
-		for (int cx = 0; cx < w; cx++) {
-			for (int cy = 0; cy < h; cy++) {
-				float sum = 0;
-				float w_sum = 0;
-				for (int dx = -cur_kernel_rad; dx <= cur_kernel_rad; dx++) {
-					for (int dy = -cur_kernel_rad; dy <= cur_kernel_rad; dy++) {
-						int nx = cx + dx, ny = cy + dy;
-						if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
-						if (cur_dis(nx, ny) == -1) continue;
-						sum += guassian(dx, dy, BLUR_KERNEL_GUASSIAN_SIGMA) *
-							   cur_dis(nx, ny);
-						w_sum += guassian(dx, dy, BLUR_KERNEL_GUASSIAN_SIGMA);
-					}
-				}
-				cur_ret(cx, cy) = sum / w_sum;
-				if (w_sum == 0)
-					cur_ret(cx, cy) = -1;
-			}
-		}
-		ret[i] = cur_ret;
+		cur_ret.Copy(cur_dis);
+		// for (int x = 0; x < w; x++) {
+		// 	for (int y = 0; y < h; y++) {
+		// 		if (cur_dis(x, y) == -1) cur_ret(x, y) = 0;
+		// 	}
+		// }
+		ret[i] = cur_ret.guassian_blur(BLUR_KERNEL_GUASSIAN_SIGMA, cur_kernel_rad);
+		// for (int x = 0; x < w; x++){
+		// 	for (int y = 0; y < h; y++){
+		// 		if (cur_dis(x, y) == -1)
+		// 			cur_ret(x, y) = -1;
+		// 	}
+		// }
 	}
 	return ret;
 }
@@ -113,6 +168,7 @@ Buffer2D<Vec3> Impl::merge_kernel_integer(const vec_of_img_t<float> &blur_output
 
 Buffer2D<Vec3> Impl::merge_kernel_subpixel(
 	const vec_of_img_t<float> &blur_output,
+	const Buffer2D<Vec2> &base_shiftv, 
 	const Buffer2D<Vec3> &merge_int_output) {
 	// form of quadric surface: z = ax^2 + by^2 + cxy + dx + ey + f
 	// phi refer to [x^2, y^2, xy, x, y, 1]
@@ -210,16 +266,6 @@ pair<Buffer2D<Color>, Buffer2D<float>> Impl::reproject_kernel(const Buffer2D<Vec
 
 array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 	const FrameInfo &frame) {
-	auto discard_zcomp = [](const Buffer2D<Vec3> &buffer) {
-		auto ret = CreateBuffer2D<Vec2>(buffer.m_width, buffer.m_height);
-		for (int i = 0; i < buffer.m_width; i++) {
-			for (int j = 0; j < buffer.m_height; j++) {
-				ret(i, j) = Vec2(buffer(i, j).x, buffer(i, j).y);
-			}
-		}
-		return ret;
-	};
-
 	Impl::output_t ret;
 	if (is_first_frame) {
 		is_first_frame = false;
@@ -234,11 +280,11 @@ array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 		pre_frame = frame;
 		return ret;
 	}
-	auto &image = frame.m_beauty;
+	auto &&filtered_img = filter_kernel(frame);
 	float sc = 1.0 / pow(HIER_REDUC_FACTOR, HIER_LEVEL - 1);
 	for (int i = HIER_LEVEL - 1; i >= 0; i--, sc *= HIER_REDUC_FACTOR) {
 		auto &cur_pass = ret[i];
-		cur_pass.scale_img = scale_img_ave(image, sc);
+		cur_pass.scale_img = scale_img_ave(filtered_img, sc);
 		Buffer2D<Vec2> base_shift;
 		if (i != HIER_LEVEL - 1) {
 			base_shift =
@@ -259,13 +305,18 @@ array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 			merge_kernel_integer(cur_pass.blur_kernel, base_shift);
 		if (USE_SUB_PIXEL)
 			cur_pass.merge_kernel_subpixel = merge_kernel_subpixel(
-			cur_pass.blur_kernel, cur_pass.merge_kernel_integer);
+			cur_pass.blur_kernel,
+			base_shift,
+			cur_pass.merge_kernel_integer);
+		else {
+			cur_pass.merge_kernel_integer = cur_pass.merge_kernel_integer.guassian_blur(2, 4);
+		}
 
 		cur_pass.overall_shiftv = base_shift;
 		auto overall_with_dis = CreateBuffer2D<Vec3>(
 			cur_pass.overall_shiftv.m_width, cur_pass.overall_shiftv.m_height);
 		for (int j = 0; j < cur_pass.overall_shiftv.m_size; j++) {
-			auto[curdx, curdy, dis] = USE_SUB_PIXEL	&& i < HIER_REFINE_AFTER
+			auto[curdx, curdy, dis] = USE_SUB_PIXEL	&& (i < HIER_REFINE_AFTER)
 						 ? cur_pass.merge_kernel_subpixel(j) : cur_pass.merge_kernel_integer(j);
 			cur_pass.overall_shiftv(j) += Vec2(curdx, curdy);
 			auto [x, y] = cur_pass.overall_shiftv(j);

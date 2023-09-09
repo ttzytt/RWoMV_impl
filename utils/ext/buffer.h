@@ -62,6 +62,7 @@ class Buffer2D : public Buffer<T> {
 	T &operator()(const int &x, const int &y);
 	T &operator()(const Ivec2 &pos);
 	Buffer2D<T>& normalize();
+	Buffer2D<T> guassian_blur(float sigma, int kernel_rad) const;
 	int m_width, m_height;
 };
 
@@ -168,4 +169,35 @@ inline Buffer2D<Vec3> &Buffer2D<Vec3>::normalize() {
 		m_buffer[i].z = (m_buffer[i] - mn).z / diff.z;
 	}
 	return *this;
+}
+
+template<typename T> 
+inline Buffer2D<T> Buffer2D<T>::guassian_blur(float sigma, int kernel_rad) const {
+	int w = m_width, h = m_height;
+	auto ret = CreateBuffer2D<T>(w, h);
+	std::fill(ret.m_buffer.get(), ret.m_buffer.get() + w * h, T(-1));
+	// #pragma omp parallel for
+	for (int cx = 0; cx < w; cx++) {
+		for (int cy = 0; cy < h; cy++) {
+			T sum(0);
+			float w_sum = 0;
+			for (int dx = -kernel_rad; dx <= kernel_rad; dx++) {
+				for (int dy = -kernel_rad; dy <= kernel_rad; dy++) {
+					int nx = cx + dx, ny = cy + dy;
+					if (nx < 0 || nx >= w || ny < 0 || ny >= h) continue;
+					if (operator()(nx, ny) == T(-1)){
+						continue;
+					}
+					sum += operator()(nx, ny) * guassian(dx, dy, sigma);
+					w_sum += guassian(dx, dy, sigma);
+				}
+			}
+			if (w_sum == 0){
+				ret(cx, cy) = T(-1);
+				continue;
+			}
+			ret(cx, cy) = sum / w_sum;
+		}
+	}
+	return ret;
 }

@@ -36,21 +36,27 @@ const array<DIS_FUNC_SIG, 4> DIS_FUNCS{L1_FUNC, L2_FUNC, LOG_L1_FUNC,
 const DIS_TYPES DIS_TYPE = LOG_L1C;
 const auto DIS_FUNC = DIS_FUNCS[DIS_TYPE];
 
-const bool USE_SUB_PIXEL = true;
+const bool USE_SUB_PIXEL = false;
 
 // kernel parameters
 
-const int MAX_SHIFT_VEC_MAG = 2;  // s = [-2, 2]^2
+const int MAX_SHIFT_VEC_MAG = 4 ;  // s = [-2, 2]^2
 const float BLUR_KERNEL_RAD_RATIO = 0.01;
 const float BLUR_KERNEL_GUASSIAN_SIGMA = 1.0;
 
-const float MERGE_KERNEL_SIGMA = 1.0;
+const float MERGE_KERNEL_SIGMA = 3.0;
 const int MERGE_KERNEL_RAD = 3;
 const float MERGE_KERNEL_DESC_STEP = .05;
 const int MERGE_KERNEL_DESC_ITER = 50;
 
+const int   FILT_KERNEL_RAD = 16; 
+const float FILT_KERNEL_SIG_PLANE = .2f;
+const float FILT_KERNEL_SIG_COLOR = .6f;
+const float FILT_KERNEL_SIG_NORM = .1f;
+const float FILT_KERNEL_SIG_COORD = 32.0f;
+
 // blending and rejection parameters
-const float BLEND_ALPHA = 0.7;
+const float BLEND_ALPHA = 0.9;
 const float REJECT_KAPPA = .3;
 const float REJECT_ETA = REJECT_KAPPA;
 const int VAR_CLAMP_RAD = 3;
@@ -58,7 +64,7 @@ const int VAR_CLAMP_COL_BOX = 1;
 
 // hierarchy parameters
 
-const int HIER_LEVEL = 3;
+const int HIER_LEVEL = 2;
 const float HIER_REDUC_FACTOR = 4;
 const int HIER_MAX_SHIFT_VEC_MAG = []() -> int {
 	int ret = 0;
@@ -67,4 +73,4 @@ const int HIER_MAX_SHIFT_VEC_MAG = []() -> int {
 	}
 	return ret;
 }();
-const int HIER_REFINE_AFTER = 2; // do sub-pixel refinement for levels smaller than this 
+const int HIER_REFINE_AFTER = 0; // do sub-pixel refinement for levels smaller than this 

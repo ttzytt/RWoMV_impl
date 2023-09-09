@@ -4,9 +4,8 @@
         {
             "name": "c++",
             "cppStandard": "c++20",
-            "intelliSenseMode": "linux-gcc-x64",
+            "intelliSenseMode": "${default}",
             "compilerPath": "/usr/bin/g++",
-            // include eigen
             "includePath": [
                 "${workspaceFolder}/**", 
                 "/usr/include/eigen3/**",
