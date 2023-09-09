@@ -1,5 +1,5 @@
-./build/**
-./tests/build/**
+./build/
+./tests/build/
 *.mp4
 *.exr
 ./tests/out/**
