@@ -37,10 +37,11 @@ const DIS_TYPES DIS_TYPE = LOG_L1C;
 const auto DIS_FUNC = DIS_FUNCS[DIS_TYPE];
 
 const bool USE_SUB_PIXEL = false;
+const bool USE_FILTER = false;
 
 // kernel parameters
 
-const int MAX_SHIFT_VEC_MAG = 4 ;  // s = [-2, 2]^2
+const int MAX_SHIFT_VEC_MAG = 3 ;  // s = [-2, 2]^2
 const float BLUR_KERNEL_RAD_RATIO = 0.01;
 const float BLUR_KERNEL_GUASSIAN_SIGMA = 1.0;
 

@@ -171,6 +171,22 @@ inline Buffer2D<Vec3> &Buffer2D<Vec3>::normalize() {
 	return *this;
 }
 
+
+template <>
+inline Buffer2D<float> &Buffer2D<float>::normalize() {
+	// transform all value to the range of [0, 1]
+	float mn(1e9), mx(-1e9);
+	for (int i = 0; i < m_width * m_height; i++) {
+		mn = std::min(mn, m_buffer[i]);
+		mx = std::max(mx, m_buffer[i]);
+	}
+	float diff = mx - mn;
+	for (int i = 0; i < m_width * m_height; i++) {
+		m_buffer[i] = (m_buffer[i] - mn) / diff;
+	}
+	return *this;
+}
+
 template<typename T> 
 inline Buffer2D<T> Buffer2D<T>::guassian_blur(float sigma, int kernel_rad) const {
 	int w = m_width, h = m_height;

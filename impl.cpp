@@ -47,6 +47,8 @@ vector<Buffer2D<float>> Impl::dist_kernel(const Buffer2D<Color> &image,
 }
 
 Buffer2D<Vec3> Impl::filter_kernel(const FrameInfo &frame) {
+	if (!USE_FILTER)
+		return frame.m_beauty;
 	int w = frame.m_beauty.m_width, h = frame.m_beauty.m_height;
 	Buffer2D<Vec3> ret = CreateBuffer2D<Vec3>(w, h);
 
@@ -102,7 +104,6 @@ Buffer2D<Vec3> Impl::filter_kernel(const FrameInfo &frame) {
 				ret(x, y) = Vec3(-1);
 				continue;
 			}
-			// TODO: Joint bilateral filter
 			ret(x, y) = filter_kernel(x, y);
 		}
 	}
@@ -127,6 +128,7 @@ Impl::vec_of_img_t<float> Impl::blur_kernel(
 		// 	}
 		// }
 		ret[i] = cur_ret.guassian_blur(BLUR_KERNEL_GUASSIAN_SIGMA, cur_kernel_rad);
+		// ret[i] = cur_ret;
 		// for (int x = 0; x < w; x++){
 		// 	for (int y = 0; y < h; y++){
 		// 		if (cur_dis(x, y) == -1)
@@ -137,7 +139,7 @@ Impl::vec_of_img_t<float> Impl::blur_kernel(
 	return ret;
 }
 
-Buffer2D<Vec3> Impl::merge_kernel_integer(const vec_of_img_t<float> &blur_output,
+Buffer2D<Vec3> Impl:: merge_kernel_integer(const vec_of_img_t<float> &blur_output,
 										  const Buffer2D<Vec2> &base_shiftv) {
 	int w = blur_output[0].m_width, h = blur_output[0].m_height;
 	Buffer2D<Vec3> ret = CreateBuffer2D<Vec3>(w, h);
@@ -152,7 +154,7 @@ Buffer2D<Vec3> Impl::merge_kernel_integer(const vec_of_img_t<float> &blur_output
 			for (int sv = 0; sv < single_layer_shift_vecs.size(); sv++) {
 				auto [dx, dy] =
 					single_layer_shift_vecs[sv] + base_shiftv(cx, cy);
-				float cur_dis = blur_output[sv](cx, cy);
+				float cur_dis = blur_output[sv](cx + dx, cy + dy);
 				if (cur_dis == -1) continue;
 				if (cur_dis < min_dis) {
 					min_dis = cur_dis;
@@ -272,11 +274,11 @@ array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 		BufferInOnePass tmp;
 		tmp.is_first_frame = true;
 		ret.fill(tmp);
+		ret[0].reproject_kernel = acc_color[0] = filter_kernel(frame);
 		for (int i = 1; i < HIER_LEVEL; i++){
-			ret[i].reproject_kernel = scale_img_ave(frame.m_beauty, 1.0 / pow(HIER_REDUC_FACTOR, i));
+			ret[i].reproject_kernel = scale_img_ave(ret[0].reproject_kernel, 1.0 / pow(HIER_REDUC_FACTOR, i));
 			acc_color[i] = ret[i].reproject_kernel;
 		}
-		ret[0].reproject_kernel = acc_color[0] = frame.m_beauty;
 		pre_frame = frame;
 		return ret;
 	}
@@ -309,7 +311,7 @@ array<Impl::BufferInOnePass, HIER_LEVEL> Impl::process_img(
 			base_shift,
 			cur_pass.merge_kernel_integer);
 		else {
-			cur_pass.merge_kernel_integer = cur_pass.merge_kernel_integer.guassian_blur(2, 4);
+			// cur_pass.merge_kernel_integer = cur_pass.merge_kernel_integer.guassian_blur(2, 4);
 		}
 
 		cur_pass.overall_shiftv = base_shift;

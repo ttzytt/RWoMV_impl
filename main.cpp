@@ -94,13 +94,24 @@ int main() {
 				CHECK(pass_res.dist_kernel[mid_shift_idx].m_size ==
 					  pass_res.blur_kernel[mid_shift_idx].m_size)
 				WriteFloatImage(
-					pass_res.dist_kernel[mid_shift_idx],
+					pass_res.dist_kernel[mid_shift_idx].normalize(),
 					output_dir / filename("dist_kernel_svec=" +
 										  to_string(mid_shift_idx)));
 				WriteFloatImage(
-					pass_res.blur_kernel[mid_shift_idx],
+					pass_res.blur_kernel[mid_shift_idx].normalize(),
 					output_dir / filename("blur_kernel_svec=" +
 										  to_string(mid_shift_idx)));
+				// for (int j = 0; j < pass_res.dist_kernel.size() && i != 0;
+				// 	 j++) {
+				// 	CHECK(pass_res.dist_kernel[j].m_size ==
+				// 		  pass_res.blur_kernel[j].m_size)
+				// 	WriteFloatImage(pass_res.dist_kernel[j],
+				// 					output_dir / filename("dist_kernel_svec=" +
+				// 										  to_string(j)));
+				// 	WriteFloatImage(pass_res.blur_kernel[j],
+				// 					output_dir / filename("blur_kernel_svec=" +
+				// 										  to_string(j)));
+				// }
 			}
 		}
 	}
